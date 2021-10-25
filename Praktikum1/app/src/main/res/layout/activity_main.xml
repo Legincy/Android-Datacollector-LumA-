@@ -15,9 +15,9 @@
             android:id="@+id/tvRaw" app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintBottom_toTopOf="@+id/spinnerSensor" android:layout_marginBottom="50dp"/>
     <Button
-            android:text="Stop"
+            android:text="Action"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:id="@+id/btnStop"
+            android:layout_height="wrap_content" android:id="@+id/btnAction"
             app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginBottom="100dp" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"/>
@@ -34,6 +34,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:entries="@array/Accuracy" android:textAlignment="center"
-            app:layout_constraintBottom_toTopOf="@+id/btnStop" android:layout_marginBottom="20dp"/>
+            app:layout_constraintBottom_toTopOf="@+id/btnAction" android:layout_marginBottom="20dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

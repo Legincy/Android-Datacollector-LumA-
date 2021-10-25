@@ -5,13 +5,13 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
     //Button
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         initComponents()
-
+        writeData()
     }
 
     private fun updateSensorManager(){
@@ -68,6 +68,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun writeData(){
+
+    }
+
     private fun updateAccuracy(acc: Any){
         when(acc){
             "Schnell" -> UI_SELECTED_ACCURACY = SensorManager.SENSOR_DELAY_FASTEST
@@ -79,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initComponents(){
         //Button
-        btnStop = findViewById(R.id.btnStop)
+        btnStop = findViewById(R.id.btnAction)
         btnStop.setOnClickListener {
 
         }
