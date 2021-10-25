@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="SensorTypes">
+        <item>Beschleunigungssensor</item>
+        <item>Gyroskop</item>
+        <item>Lichtsensor</item>
+        <item>Annäherungssensor</item>
+    </array>
+</resources>
