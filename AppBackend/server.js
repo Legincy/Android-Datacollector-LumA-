@@ -1,14 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-//const routes = require('./app/routes/light.routes.js');
 
 const port = 3000
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
-
-//routes(app)
 
 app.get("/", (req, res) => {
     res.json({ msg: "Unvalid request source." })
