@@ -6,6 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Button
@@ -33,6 +34,15 @@ class MainActivity : AppCompatActivity() {
     //Variables
     private var UI_SELECTED_ACCURACY: Int = SensorManager.SENSOR_DELAY_FASTEST
     private var UI_SELECTED_SENSOR: Any = Sensor.TYPE_ACCELEROMETER
+    private var lastUpdate: Long = System.currentTimeMillis()
+
+    private val apiHandler: APIHandler = APIHandler()
+
+    //Maps
+    private val sensors: HashMap<Int, String> =
+        hashMapOf(  Sensor.TYPE_LIGHT to "light", Sensor.TYPE_ACCELEROMETER to "accelerometer",
+                    Sensor.TYPE_GYROSCOPE to "gyroscope", Sensor.TYPE_PROXIMITY to "proximity")
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,36 +50,52 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         initComponents()
-        writeData()
+        //writeData()
     }
 
-    private fun updateSensorManager(){
-        var sensorType: Int? = null
+    private fun updateSensorManager(sensor: String?){
         var delay = UI_SELECTED_ACCURACY
-        when(UI_SELECTED_SENSOR){
-            "Beschleunigungssensor" -> sensorType = Sensor.TYPE_ACCELEROMETER
-            "Gyroskop" -> sensorType = Sensor.TYPE_GYROSCOPE
-            "Lichtsensor" -> sensorType= Sensor.TYPE_LIGHT
-            "Annäherungssensor" -> sensorType= Sensor.TYPE_PROXIMITY
+        if(sensor != null){
+            when(sensor){
+                "Beschleunigungssensor" -> UI_SELECTED_SENSOR = Sensor.TYPE_ACCELEROMETER
+                "Gyroskop" -> UI_SELECTED_SENSOR = Sensor.TYPE_GYROSCOPE
+                "Lichtsensor" -> UI_SELECTED_SENSOR = Sensor.TYPE_LIGHT
+                "Annäherungssensor" -> UI_SELECTED_SENSOR = Sensor.TYPE_PROXIMITY
+            }
         }
 
         sensorManager.unregisterListener(sensorListener)
-        if(sensorType != null){
-            if(UI_SELECTED_ACCURACY < 0){
-                when(UI_SELECTED_ACCURACY){
-                    -1 -> delay = 1000000
-                    -2 -> {
-                        sensorManager.unregisterListener(sensorListener)
-                        tvRaw.text = ""
-                    }
+        if(UI_SELECTED_SENSOR != null){
+            when(UI_SELECTED_ACCURACY){
+                -1 -> delay = 1000000
+                -2 -> {
+                    sensorManager.unregisterListener(sensorListener)
+                    tvRaw.text = ""
                 }
             }
-            sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(sensorType.toString().toInt()), delay)
+            sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(UI_SELECTED_SENSOR.toString().toInt()), delay)
         }
     }
 
-    private fun writeData(){
-
+    private fun dispatchToAPI(event: SensorEvent?){
+        val keyMap: HashMap<Int, String> = hashMapOf(0 to "x", 1 to "y", 2 to "z")
+        val sensorReq: String? = sensors.get(UI_SELECTED_SENSOR)
+        var data: HashMap<String, String> = hashMapOf<String, String>()
+        if (event != null) {
+            when(event.values.size){
+                1 -> data.put("value", event.values[0].toString())
+                3 -> { event.values.forEachIndexed { key, value -> keyMap.get(key)
+                    ?.let { data.put(it, value.toString()) } } }
+            }
+        }
+        if(sensorReq != null){
+            val now: Long = System.currentTimeMillis()
+            if(now - lastUpdate > 1000){
+                println("DATA: " + sensorReq + " : " + data)
+                apiHandler.postData(sensorReq, data)
+                lastUpdate = now
+            }
+        }
     }
 
     private fun updateAccuracy(acc: Any){
@@ -92,8 +118,7 @@ class MainActivity : AppCompatActivity() {
         spinnerSensor = findViewById(R.id.spinnerSensor)
         spinnerSensor?.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                UI_SELECTED_SENSOR = spinnerSensor.selectedItem
-                updateSensorManager()
+                updateSensorManager(spinnerSensor.selectedItem as String?)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -106,7 +131,7 @@ class MainActivity : AppCompatActivity() {
         spinnerAccuracy?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 updateAccuracy(spinnerAccuracy.selectedItem)
-                updateSensorManager()
+                updateSensorManager(null)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -132,6 +157,7 @@ class MainActivity : AppCompatActivity() {
                     Sensor.TYPE_LIGHT -> output = "\t%s lx".format(event.values[0])
                     Sensor.TYPE_PROXIMITY -> output = "\t%s".format(event.values[0])
                 }
+                dispatchToAPI(event)
                 tvRaw.text = output
             }
 

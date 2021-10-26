@@ -33,9 +33,9 @@ GRANT ALL PRIVILEGES ON `sensor`.* TO `app`@`%` IDENTIFIED BY PASSWORD '*C411277
 CREATE TABLE `accelerometer` (
   `id` int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
-  `x` int(11) NOT NULL,
-  `y` int(11) NOT NULL,
-  `z` int(11) NOT NULL
+  `x` float NOT NULL,
+  `y` float NOT NULL,
+  `z` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -47,9 +47,9 @@ CREATE TABLE `accelerometer` (
 CREATE TABLE `gyroscope` (
   `id` int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
-  `x` int(11) NOT NULL,
-  `y` int(11) NOT NULL,
-  `z` int(11) NOT NULL
+  `x` float NOT NULL,
+  `y` float NOT NULL,
+  `z` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -61,7 +61,7 @@ CREATE TABLE `gyroscope` (
 CREATE TABLE `light` (
   `id` int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
-  `value` int(11) NOT NULL
+  `value` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -73,7 +73,9 @@ CREATE TABLE `light` (
 CREATE TABLE `proximity` (
   `id` int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
-  `value` int(11) NOT NULL
+  `x` float NOT NULL,
+  `y` float NOT NULL,
+  `z` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --

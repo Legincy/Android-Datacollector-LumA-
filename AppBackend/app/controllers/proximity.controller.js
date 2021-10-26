@@ -8,7 +8,9 @@ exports.create = (req, res) => {
     }
 
     const proxData = new Proximity({
-        value: req.body.value
+        x: req.body.x,
+        y: req.body.y,
+        z: req.body.z
     });
 
     Proximity.create(proxData, (err, data) => {
