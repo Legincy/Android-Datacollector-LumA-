@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 //routes(app)
 
 app.get("/", (req, res) => {
-    res.json({ message: "Hallo Welt" })
+    res.json({ msg: "Unvalid request source." })
 })
 
 
