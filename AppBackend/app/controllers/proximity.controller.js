@@ -10,7 +10,8 @@ exports.create = (req, res) => {
     const proxData = new Proximity({
         x: req.body.x,
         y: req.body.y,
-        z: req.body.z
+        z: req.body.z,
+        deviceid: req.body.deviceid
     });
 
     Proximity.create(proxData, (err, data) => {

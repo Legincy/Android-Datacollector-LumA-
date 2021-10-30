@@ -8,7 +8,8 @@ exports.create = (req, res) => {
     }
 
     const lightData = new Light({
-        value: req.body.value
+        value: req.body.value,
+        deviceid: req.body.deviceid
     });
 
     Light.create(lightData, (err, data) => {

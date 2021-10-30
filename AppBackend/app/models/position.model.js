@@ -1,14 +1,14 @@
 const sql = require('./db');
 
-const Gyroscope = function (data) {
-    this.x = data.x;
-    this.y = data.y;
-    this.z = data.z;
+const Position = function (data) {
+    this.longitude = data.longitude;
+    this.latitude = data.latitude; 
     this.deviceid = data.deviceid;
+    this.type = data.type;
 };
 
-Gyroscope.create = (newData, result) => {
-    sql.query("INSERT INTO gyroscope SET ?", newData, (err, res) => {
+Position.create = (newData, result) => {
+    sql.query("INSERT INTO position SET ?", newData, (err, res) => {
         if (err) {
             console.log("[ERROR]: ", err);
             result(err, null);
@@ -20,4 +20,4 @@ Gyroscope.create = (newData, result) => {
     })
 };
 
-module.exports = Gyroscope
+module.exports = Accelerometer

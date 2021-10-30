@@ -1,4 +1,4 @@
-const Gyroscope = require('../models/gyroscope.model.js');
+const Position = require('../models/position.model.js');
 
 exports.create = (req, res) => {
     if (!req.body) {
@@ -7,14 +7,14 @@ exports.create = (req, res) => {
         })
     }
 
-    const gyroData = new Gyroscope({
-        x: req.body.x,
-        y: req.body.y,
-        z: req.body.z,
-        deviceid: req.body.deviceid
+    const posData = new Position({
+        longitude: req.body.longitude,
+        latitude: req.body.latitude,
+        deviceid: req.body.deviceid,
+        type: req.body.type
     });
 
-    Gyroscope.create(gyroData, (err, data) => {
+    Position.create(posData, (err, data) => {
         if (err)
             res.status(500).send({
                 message:
