@@ -35,7 +35,18 @@ CREATE TABLE `accelerometer` (
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
   `x` float NOT NULL,
   `y` float NOT NULL,
-  `z` float NOT NULL
+  `z` float NOT NULL,
+  `device_id` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `device`
+--
+
+CREATE TABLE `device` (
+  `id` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -49,7 +60,8 @@ CREATE TABLE `gyroscope` (
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
   `x` float NOT NULL,
   `y` float NOT NULL,
-  `z` float NOT NULL
+  `z` float NOT NULL,
+  `device_id` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -61,7 +73,8 @@ CREATE TABLE `gyroscope` (
 CREATE TABLE `light` (
   `id` int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
-  `value` float NOT NULL
+  `value` float NOT NULL,
+  `device_id` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -75,7 +88,8 @@ CREATE TABLE `proximity` (
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
   `x` float NOT NULL,
   `y` float NOT NULL,
-  `z` float NOT NULL
+  `z` float NOT NULL,
+  `device_id` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -86,25 +100,35 @@ CREATE TABLE `proximity` (
 -- Indizes für die Tabelle `accelerometer`
 --
 ALTER TABLE `accelerometer`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FOREIGN_ACC_DEVICE` (`device_id`);
+
+--
+-- Indizes für die Tabelle `device`
+--
+ALTER TABLE `device`
   ADD PRIMARY KEY (`id`);
 
 --
 -- Indizes für die Tabelle `gyroscope`
 --
 ALTER TABLE `gyroscope`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FOREIGN_GYRO_DEVICE` (`device_id`);
 
 --
 -- Indizes für die Tabelle `light`
 --
 ALTER TABLE `light`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FOREIGN_LIGHT_DEVICE` (`device_id`);
 
 --
 -- Indizes für die Tabelle `proximity`
 --
 ALTER TABLE `proximity`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FOREIGN_PROX_DEVICE` (`device_id`);
 
 --
 -- AUTO_INCREMENT für exportierte Tabellen
@@ -114,25 +138,53 @@ ALTER TABLE `proximity`
 -- AUTO_INCREMENT für Tabelle `accelerometer`
 --
 ALTER TABLE `accelerometer`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT für Tabelle `gyroscope`
 --
 ALTER TABLE `gyroscope`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT für Tabelle `light`
 --
 ALTER TABLE `light`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT für Tabelle `proximity`
 --
 ALTER TABLE `proximity`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- Constraints der exportierten Tabellen
+--
+
+--
+-- Constraints der Tabelle `accelerometer`
+--
+ALTER TABLE `accelerometer`
+  ADD CONSTRAINT `FOREIGN_ACC_DEVICE` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`);
+
+--
+-- Constraints der Tabelle `gyroscope`
+--
+ALTER TABLE `gyroscope`
+  ADD CONSTRAINT `FOREIGN_GYRO_DEVICE` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`);
+
+--
+-- Constraints der Tabelle `light`
+--
+ALTER TABLE `light`
+  ADD CONSTRAINT `FOREIGN_LIGHT_DEVICE` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`);
+
+--
+-- Constraints der Tabelle `proximity`
+--
+ALTER TABLE `proximity`
+  ADD CONSTRAINT `FOREIGN_PROX_DEVICE` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
