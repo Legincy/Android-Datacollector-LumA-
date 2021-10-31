@@ -2,7 +2,7 @@ const sql = require('./db');
 
 const Light = function (data) {
     this.value = data.value;
-    this.deviceid = data.deviceid;
+    this.device_id = data.deviceid;
 };
 
 Light.create = (newData, result) => {

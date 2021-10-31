@@ -1,23 +1,44 @@
 package pl.peth.datacollector.api
 
+import android.content.Context
+import android.provider.Settings
+import android.util.Log
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.io.IOException
 
 
-class APIHandler {
+class APIHandler{
     private lateinit var API_ADDRESS: String
     private lateinit var API_PORT: String
 
-    constructor(){
+    private lateinit var context: Context
+    public lateinit var uniqueID: String
+
+    private lateinit var getResponse: Response
+
+    constructor(context: Context){
         API_PORT = "3000"
         API_ADDRESS = "http://192.168.0.159:%s".format(API_PORT)
+        this.context = context
+        prepareAPI()
     }
 
-    private fun initRequest(data: String, targetAddr: String, methodType: String){
+    public fun prepareAPI(){
+        uniqueID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID)
+        val data: HashMap<String, String> = hashMapOf("deviceid" to uniqueID)
+        postData("device",data)
+    }
+
+    private fun initRequest(data: String, targetAddr: String, methodType: String) {
         val client: OkHttpClient = OkHttpClient().newBuilder().build()
         val mediaType: MediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()!!
-        val body: RequestBody = RequestBody.create(mediaType, data)
+        var body: RequestBody? = null
+
+        if(methodType == "POST"){
+            body = RequestBody.create(mediaType, data)
+        }
+
         val request: Request = Request.Builder()
             .url(targetAddr)
             .method(methodType, body)
@@ -25,17 +46,23 @@ class APIHandler {
             .build()
         client.newCall(request).enqueue(object : Callback{
             override fun onFailure(call: Call, e: IOException) {
-                println("[API-Err]: %s - %s".format(e, call))
+                Log.e("API-Err", "%s - %s".format(e, call))
             }
 
             override fun onResponse(call: Call, response: Response) {
-                println("[API-Resp]: %s - %s".format(response, call))
+                Log.e("API-Resp", "%s - %s".format(response, call))
             }
+
         })
     }
 
+    public fun getData(dest: String, id: String){
+        val target: String =  "${API_ADDRESS}/${dest}/${id}"
+        initRequest("", target, "GET")
+    }
+
     public fun postData(dest: String, data: HashMap<String, String>){
-        val target: String = API_ADDRESS + "/%s".format(dest)
+        val target: String =  "${API_ADDRESS}/${dest}"
         var content: String = ""
         data.forEach { key, value ->
             content = content + "%s=%s&".format(key, value)
@@ -44,5 +71,4 @@ class APIHandler {
             initRequest(content.dropLast(1), target, "POST")
         }
     }
-
 }

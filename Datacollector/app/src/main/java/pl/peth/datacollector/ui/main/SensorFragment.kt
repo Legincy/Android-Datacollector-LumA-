@@ -17,7 +17,7 @@ import pl.peth.datacollector.R
 import pl.peth.datacollector.api.APIHandler
 
 
-class SensorFragment : Fragment(){
+class SensorFragment(pagerAdapter: SectionsPagerAdapter) : Fragment(){
     //Spinner
     private lateinit var spinnerSensor: Spinner
     private lateinit var spinnerAccuracy: Spinner
@@ -36,7 +36,7 @@ class SensorFragment : Fragment(){
     private var UI_SELECTED_SENSOR: Any = Sensor.TYPE_ACCELEROMETER
     private var lastUpdate: Long = System.currentTimeMillis()
 
-    private val apiHandler: APIHandler = APIHandler()
+    private val apiHandler: APIHandler = pagerAdapter.apiHandler
 
     //View
     private lateinit var rootView: View
@@ -89,6 +89,7 @@ class SensorFragment : Fragment(){
         val sensorReq: String? = sensors.get(UI_SELECTED_SENSOR)
         var data: HashMap<String, String> = hashMapOf<String, String>()
         if (event != null) {
+            data.put("deviceid", apiHandler.uniqueID)
             when(event.values.size){
                 1 -> data.put("value", event.values[0].toString())
                 3 -> { event.values.forEachIndexed { key, value -> keyMap.get(key)
@@ -98,7 +99,6 @@ class SensorFragment : Fragment(){
         if(sensorReq != null){
             val now: Long = System.currentTimeMillis()
             if(now - lastUpdate > 1000){
-                println("DATA: " + sensorReq + " : " + data)
                 apiHandler.postData(sensorReq, data)
                 lastUpdate = now
             }

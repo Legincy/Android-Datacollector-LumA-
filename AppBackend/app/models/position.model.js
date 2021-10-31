@@ -2,8 +2,8 @@ const sql = require('./db');
 
 const Position = function (data) {
     this.longitude = data.longitude;
-    this.latitude = data.latitude; 
-    this.deviceid = data.deviceid;
+    this.latitude = data.latitude;
+    this.device_id = data.deviceid;
     this.type = data.type;
 };
 
@@ -20,4 +20,4 @@ Position.create = (newData, result) => {
     })
 };
 
-module.exports = Accelerometer
+module.exports = Position
