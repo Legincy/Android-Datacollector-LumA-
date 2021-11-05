@@ -1,4 +1,4 @@
-package pl.peth.datacollector.ui.main
+package pl.peth.datacollector.ui
 
 import android.content.Context
 import android.hardware.Sensor
@@ -48,7 +48,7 @@ class SensorFragment(pagerAdapter: SectionsPagerAdapter) : Fragment(){
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        rootView = inflater!!.inflate(R.layout.fragment_sensor, container, false)
+        rootView = inflater!!.inflate(R.layout.sensor_fragment, container, false)
 
         if(inflater != null){
             return rootView
