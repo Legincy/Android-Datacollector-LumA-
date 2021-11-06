@@ -6,6 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,8 @@ import android.widget.AdapterView
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import pl.peth.datacollector.R
 import pl.peth.datacollector.api.APIHandler
 
@@ -24,6 +27,7 @@ class SensorFragment(pagerAdapter: SectionsPagerAdapter) : Fragment(){
 
     //TextView
     private lateinit var tvRaw: TextView
+    private lateinit var tvError: TextView
 
     //Manager
     private lateinit var sensorManager: SensorManager
@@ -37,6 +41,9 @@ class SensorFragment(pagerAdapter: SectionsPagerAdapter) : Fragment(){
     private var lastUpdate: Long = System.currentTimeMillis()
 
     private val apiHandler: APIHandler = pagerAdapter.apiHandler
+
+    //Const
+    private var API_DELAY: Int = 10
 
     //View
     private lateinit var rootView: View
@@ -84,24 +91,32 @@ class SensorFragment(pagerAdapter: SectionsPagerAdapter) : Fragment(){
         }
     }
 
-    private fun dispatchToAPI(event: SensorEvent?){
-        val keyMap: HashMap<Int, String> = hashMapOf(0 to "x", 1 to "y", 2 to "z")
-        val sensorReq: String? = sensors.get(UI_SELECTED_SENSOR)
-        var data: HashMap<String, String> = hashMapOf<String, String>()
-        if (event != null) {
-            data.put("deviceid", apiHandler.uniqueID)
-            when(event.values.size){
-                1 -> data.put("value", event.values[0].toString())
-                3 -> { event.values.forEachIndexed { key, value -> keyMap.get(key)
-                    ?.let { data.put(it, value.toString()) } } }
+    private fun dispatchToAPI(event: SensorEvent?) {
+        if(apiHandler != null){
+            val keyMap: HashMap<Int, String> = hashMapOf(0 to "x", 1 to "y", 2 to "z")
+            val sensorReq: String? = sensors.get(UI_SELECTED_SENSOR)
+            var data: HashMap<String, String> = hashMapOf<String, String>()
+            if (event != null) {
+                data.put("deviceid", apiHandler.uniqueID)
+                when(event.values.size){
+                    1 -> data.put("value", event.values[0].toString())
+                    3 -> { event.values.forEachIndexed { key, value -> keyMap.get(key)
+                        ?.let { data.put(it, value.toString()) } } }
+                }
+            }
+            if(sensorReq != null){
+                val now: Long = System.currentTimeMillis()
+                if(now - lastUpdate > API_DELAY * 1000){
+                    apiHandler.postData(sensorReq, data)
+                    lastUpdate = now
+                }
             }
         }
-        if(sensorReq != null){
-            val now: Long = System.currentTimeMillis()
-            if(now - lastUpdate > 1000){
-                apiHandler.postData(sensorReq, data)
-                lastUpdate = now
-            }
+
+        if(apiHandler.connection) {
+            tvError.text = ""
+        }else{
+            tvError.text = "[Error]: Could not reach API endpoint."
         }
     }
 
@@ -147,6 +162,7 @@ class SensorFragment(pagerAdapter: SectionsPagerAdapter) : Fragment(){
 
         //TextView
         tvRaw = rootView.findViewById<TextView>(R.id.tvRaw) as TextView
+        tvError = rootView.findViewById<TextView>(R.id.tvError) as TextView
 
         //Manager
         sensorManager = activity!!.getSystemService(Context.SENSOR_SERVICE) as SensorManager

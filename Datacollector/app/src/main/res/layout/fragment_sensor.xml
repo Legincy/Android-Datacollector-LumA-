@@ -29,5 +29,23 @@
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/spinnerSensor" android:layout_marginBottom="24dp"
             android:textAlignment="center"/>
+    <TableLayout
+            android:layout_width="362dp"
+            android:layout_height="277dp"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="68dp"
+            app:layout_constraintHorizontal_bias="0.489">
+
+        <TableRow android:layout_width="match_parent" android:layout_height="match_parent"/>
+        <TableRow android:layout_width="match_parent" android:layout_height="match_parent"/>
+        <TableRow android:layout_width="match_parent" android:layout_height="match_parent"/>
+        <TableRow android:layout_width="match_parent" android:layout_height="match_parent"/>
+    </TableLayout>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/tvError"
+            app:layout_constraintTop_toBottomOf="@+id/spinnerAccuracy" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginTop="20dp" android:textColor="#F11010"
+            android:textStyle="bold"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
