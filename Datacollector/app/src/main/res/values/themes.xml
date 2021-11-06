@@ -42,6 +42,5 @@
     <style name="dropDownMenuStyle">
         <item name="colorSurface">@color/darkMode</item>
         <item name="android:outlineSpotShadowColor">@color/themeColor</item>
-        <item name="android:hint">Accuracy</item>
     </style>
 </resources>

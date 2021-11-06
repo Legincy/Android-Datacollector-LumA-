@@ -4,10 +4,17 @@
     <string name="tab_text_position">Position</string>
     <string name="tab_text_3">Tab 3</string>
     
-    <string-array name="accuracyItems">
+    <string-array name="dropDownAccuracyItems">
         <item>Fast</item>
         <item>Normal</item>
         <item>slow</item>
         <item>Stop</item>
+    </string-array>
+
+    <string-array name="dropDownSensorItems">
+        <item>Beschleunigungssensor</item>
+        <item>Gyroskop</item>
+        <item>Lichtsensor</item>
+        <item>Annäherungssensor</item>
     </string-array>
 </resources>

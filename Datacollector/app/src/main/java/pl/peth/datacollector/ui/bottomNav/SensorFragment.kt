@@ -24,10 +24,14 @@ class SensorFragment() : Fragment(R.layout.sensor_fragment) {
                 lifecycleOwner = this@SensorFragment
             }
 
-        val accuracyArray = resources.getStringArray(R.array.accuracyItems)
+        val accuracyArray = resources.getStringArray(R.array.dropDownAccuracyItems)
+        val sensorArray = resources.getStringArray(R.array.dropDownSensorItems)
         val accuracyArrayAdapter =
             ArrayAdapter(requireContext(), R.layout.drop_down_item, accuracyArray)
-        binding?.accuracyText?.setAdapter(accuracyArrayAdapter)
+        val sensorArrayAdapter =
+            ArrayAdapter(requireContext(),R.layout.drop_down_item,sensorArray)
+        binding?.accuracyDropDownText?.setAdapter(accuracyArrayAdapter)
+        binding?.sensorDropDownText?.setAdapter(sensorArrayAdapter)
 
         return binding?.root
     }
