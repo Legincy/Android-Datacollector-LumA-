@@ -13,26 +13,35 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
     <style name="Theme.Datacollector.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-    <style name="Theme.Datacollector.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
-    <style name="Theme.Datacollector.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
-    <style name="NavigationBarActiveStyle">
+    <style name="Theme.Datacollector.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.Datacollector.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="navigationBarTextActiveStyle">
         <item name="android:textSize">14sp</item>
         <item name="fontFamily">sans-serif</item>
-        <item name="android:textStyle">normal</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:lineSpacingExtra">10sp</item>
         <item name="android:textAlignment">center</item>
     </style>
 
-    <style name="NavigationBarInactiveStyle">
+    <style name="navigationBarTextInactiveStyle">
         <item name="android:textSize">10sp</item>
         <item name="fontFamily">sans-serif</item>
         <item name="android:textStyle">normal</item>
         <item name="android:lineSpacingExtra">10sp</item>
         <item name="android:gravity">center</item>
+    </style>
+
+    <style name="dropDownMenuStyle">
+        <item name="colorSurface">@color/darkMode</item>
+        <item name="android:outlineSpotShadowColor">@color/themeColor</item>
+        <item name="android:hint">Accuracy</item>
     </style>
 </resources>
