@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item
+        android:id="@+id/sensorFragment"
+        android:title="SENSOR"
+        android:icon="@drawable/sensor_icon"/>
+    <item
+        android:id="@+id/positionFragment"
+        android:title="POSITION"
+        android:icon="@drawable/position_icon"/>
+    <item
+        android:id="@+id/XFragment"
+        android:title="X"
+        android:icon="@drawable/x_icon"/>
 </menu>

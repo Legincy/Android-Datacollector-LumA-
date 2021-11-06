@@ -1,4 +1,6 @@
-package pl.peth.datacollector.ui
+package pl.peth.datacollector.ui.bottomNav
 
-class XFragment {
+import androidx.fragment.app.Fragment
+
+class XFragment: Fragment() {
 }

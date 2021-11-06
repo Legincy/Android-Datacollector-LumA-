@@ -1,4 +1,4 @@
-package pl.peth.datacollector.ui
+package pl.peth.datacollector.ui.bottomNav
 
 import android.os.Bundle
 import android.view.LayoutInflater

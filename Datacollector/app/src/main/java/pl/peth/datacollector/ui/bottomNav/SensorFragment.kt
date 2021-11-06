@@ -1,4 +1,4 @@
-package pl.peth.datacollector.ui
+package pl.peth.datacollector.ui.bottomNav
 
 import android.content.Context
 import android.hardware.Sensor
@@ -17,7 +17,10 @@ import pl.peth.datacollector.R
 import pl.peth.datacollector.api.APIHandler
 
 
-class SensorFragment(pagerAdapter: SectionsPagerAdapter) : Fragment(){
+
+class SensorFragment() : Fragment(R.layout.sensor_fragment){
+
+    /**
     //Spinner
     private lateinit var spinnerSensor: Spinner
     private lateinit var spinnerAccuracy: Spinner
@@ -149,7 +152,7 @@ class SensorFragment(pagerAdapter: SectionsPagerAdapter) : Fragment(){
         tvRaw = rootView.findViewById<TextView>(R.id.tvRaw) as TextView
 
         //Manager
-        sensorManager = activity!!.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        sensorManager = requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
         //Listener
         sensorListener = object : SensorEventListener {
@@ -170,4 +173,5 @@ class SensorFragment(pagerAdapter: SectionsPagerAdapter) : Fragment(){
             }
         }
     }
+    **/
 }

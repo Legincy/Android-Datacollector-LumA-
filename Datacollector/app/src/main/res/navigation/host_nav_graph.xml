@@ -1,6 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:id="@+id/host_nav_graph">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/host_nav_graph"
+    app:startDestination="@id/sensorFragment">
 
+    <fragment
+        android:id="@+id/positionFragment"
+        android:name="pl.peth.datacollector.ui.bottomNav.PositionFragment"
+        android:label="PositionFragment" >
+        <action
+            android:id="@+id/action_positionFragment_to_XFragment"
+            app:destination="@id/XFragment" />
+        <action
+            android:id="@+id/action_positionFragment_to_sensorFragment"
+            app:destination="@id/sensorFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/sensorFragment"
+        android:name="pl.peth.datacollector.ui.bottomNav.SensorFragment"
+        android:label="SensorFragment" >
+        <action
+            android:id="@+id/action_sensorFragment_to_XFragment"
+            app:destination="@id/XFragment" />
+        <action
+            android:id="@+id/action_sensorFragment_to_positionFragment"
+            app:destination="@id/positionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/XFragment"
+        android:name="pl.peth.datacollector.ui.bottomNav.XFragment"
+        android:label="XFragment" >
+        <action
+            android:id="@+id/action_XFragment_to_positionFragment"
+            app:destination="@id/positionFragment" />
+        <action
+            android:id="@+id/action_XFragment_to_sensorFragment"
+            app:destination="@id/sensorFragment" />
+    </fragment>
 </navigation>
