@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity() {
                 lifecycleOwner = this@MainActivity
             }
         setupNavigation()
-
         /** TO DO **/
         //val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager, apiHandler)
         //val viewPager: ViewPager = binding.viewPager
