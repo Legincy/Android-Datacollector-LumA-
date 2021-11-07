@@ -4,14 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.peth.datacollector.R
 import pl.peth.datacollector.databinding.SensorFragmentBinding
 
 
-class SensorFragment() : Fragment() {
+class SensorFragment() : Fragment(), AdapterView.OnItemClickListener {
 
     private var binding: SensorFragmentBinding? = null
     private val sensorFragmentViewModel: SensorFragmentViewModel by viewModel()
@@ -38,14 +40,34 @@ class SensorFragment() : Fragment() {
         val sensorArrayAdapter =
             ArrayAdapter(requireContext(), R.layout.drop_down_item, sensorArray)
 
-        binding?.accuracyDropDownText?.setAdapter(accuracyArrayAdapter)
-        binding?.sensorDropDownText?.setAdapter(sensorArrayAdapter)
+        // binding?.accuracyDropDownText?.setAdapter(accuracyArrayAdapter)
+        //binding?.sensorDropDownText?.setAdapter(sensorArrayAdapter)
+
+        with(binding?.accuracyDropDownText) {
+            this?.setAdapter(accuracyArrayAdapter)
+            this?.onItemClickListener = this@SensorFragment
+        }
+        with(binding?.sensorDropDownText) {
+            this?.setAdapter(sensorArrayAdapter)
+            this?.onItemClickListener = this@SensorFragment
+        }
+
+
+    }
+
+    override fun onItemClick(array: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        val item = array?.getItemAtPosition(position).toString()
+        if (item.equals("Normal"))
+            Toast.makeText(activity, "Normal", Toast.LENGTH_SHORT).show()
+        else
+            Toast.makeText(activity, "else", Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         binding = null
     }
+
     /**
     //Spinner
     private lateinit var spinnerSensor: Spinner
