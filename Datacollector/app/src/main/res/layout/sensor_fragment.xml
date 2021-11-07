@@ -76,28 +76,26 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/sensorResult"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="60dp"
             android:layout_marginEnd="20dp"
             android:theme="@style/dropDownMenuStyle"
             app:boxStrokeColor="@color/themeColor"
             app:endIconTint="@color/black"
             app:hintTextColor="@color/themeColor"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/accuracyDropDown">
 
             <AutoCompleteTextView
                 android:id="@+id/sensorResultText"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif"
                 android:inputType="none"
                 android:padding="14dp"
-                android:text="Result"
+                android:text="@{viewModel.sensorLiveData}"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />

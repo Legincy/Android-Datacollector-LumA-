@@ -1,5 +1,6 @@
 package pl.peth.datacollector.ui.bottomNav
 
+import android.app.Application
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,10 +24,11 @@ class SensorFragment() : Fragment(), AdapterView.OnItemClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
+        val application = Application()
         binding = SensorFragmentBinding.inflate(layoutInflater)
             .apply {
                 lifecycleOwner = this@SensorFragment
-                viewModel = SensorFragmentViewModel()
+                viewModel = sensorFragmentViewModel
             }
         setupDropDowns()
         return binding?.root
@@ -40,9 +42,6 @@ class SensorFragment() : Fragment(), AdapterView.OnItemClickListener {
         val sensorArrayAdapter =
             ArrayAdapter(requireContext(), R.layout.drop_down_item, sensorArray)
 
-        // binding?.accuracyDropDownText?.setAdapter(accuracyArrayAdapter)
-        //binding?.sensorDropDownText?.setAdapter(sensorArrayAdapter)
-
         with(binding?.accuracyDropDownText) {
             this?.setAdapter(accuracyArrayAdapter)
             this?.onItemClickListener = this@SensorFragment
@@ -51,8 +50,6 @@ class SensorFragment() : Fragment(), AdapterView.OnItemClickListener {
             this?.setAdapter(sensorArrayAdapter)
             this?.onItemClickListener = this@SensorFragment
         }
-
-
     }
 
     override fun onItemClick(array: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -65,6 +62,7 @@ class SensorFragment() : Fragment(), AdapterView.OnItemClickListener {
 
     override fun onDestroy() {
         super.onDestroy()
+        sensorFragmentViewModel.unregisterSensors()
         binding = null
     }
 
