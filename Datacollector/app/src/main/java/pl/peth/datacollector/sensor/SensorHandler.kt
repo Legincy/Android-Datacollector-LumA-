@@ -16,13 +16,14 @@ class SensorHandler {
 
     //Const
     var UI_SELECTED_SENSOR: Int = -1
-    var UI_SELECTED_ACCURACY: Int = SensorManager.SENSOR_DELAY_FASTEST
+    var UI_SELECTED_SENSOR_STR: String? = null
+    var UI_SELECTED_ACCURACY: Int? = null
 
     //Var
-    private var outputFunc: ((msg: String) -> Unit?)? = null
+    private var outputFunc: ((msg: SensorEvent) -> Unit?)? = null
 
     @SuppressLint("ServiceCast")
-    constructor(sensorManager: SensorManager, outputFunc: ((msg: String) -> Unit?)?) {
+    constructor(sensorManager: SensorManager, outputFunc: ((event: SensorEvent) -> Unit?)?) {
         this.sensorManager = sensorManager
         this.outputFunc = outputFunc
         setUpSensorListener()
@@ -49,7 +50,7 @@ class SensorHandler {
                     Sensor.TYPE_PROXIMITY -> output = "\t%s".format(event.values[0])
                 }
                 Log.e("SensorHandler", output.replace("\n", " | "))
-                if (outputFunc != null) outputFunc?.invoke(output)
+                if (outputFunc != null) event?.let { outputFunc?.invoke(it) }
             }
 
             override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
@@ -66,21 +67,36 @@ class SensorHandler {
         var delay = UI_SELECTED_ACCURACY
 
         when(sensor){
-            Sensor.TYPE_ACCELEROMETER -> UI_SELECTED_SENSOR = Sensor.TYPE_ACCELEROMETER
-            Sensor.TYPE_GYROSCOPE -> UI_SELECTED_SENSOR = Sensor.TYPE_GYROSCOPE
-            Sensor.TYPE_LIGHT -> UI_SELECTED_SENSOR = Sensor.TYPE_LIGHT
-            Sensor.TYPE_PROXIMITY -> UI_SELECTED_SENSOR = Sensor.TYPE_PROXIMITY
+            Sensor.TYPE_ACCELEROMETER -> {
+                UI_SELECTED_SENSOR = Sensor.TYPE_ACCELEROMETER
+                UI_SELECTED_SENSOR_STR = "accelerometer"
+            }
+            Sensor.TYPE_GYROSCOPE ->{
+                UI_SELECTED_SENSOR = Sensor.TYPE_GYROSCOPE
+                UI_SELECTED_SENSOR_STR = "gyroscope"
+
+            }
+            Sensor.TYPE_LIGHT -> {
+                UI_SELECTED_SENSOR = Sensor.TYPE_LIGHT
+                UI_SELECTED_SENSOR_STR = "light"
+            }
+            Sensor.TYPE_PROXIMITY -> {
+                UI_SELECTED_SENSOR = Sensor.TYPE_PROXIMITY
+                UI_SELECTED_SENSOR_STR = "proximity"
+            }
         }
 
         Log.e("SensorHandler", "" + UI_SELECTED_SENSOR + " " + UI_SELECTED_ACCURACY)
 
         unregisterListener()
-        when(UI_SELECTED_ACCURACY){
-            -1 -> delay = 1000000
-            -2 -> sensorManager.unregisterListener(sensorListener)
-            else -> sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(UI_SELECTED_SENSOR), delay)
+        if(delay != null) {
+            when(UI_SELECTED_ACCURACY){
+                -1 -> delay = 1000000
+                -2 -> unregisterListener()
+                else -> sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(UI_SELECTED_SENSOR), delay)
+            }
+            Log.e("SensorHandler", "Register ${sensor} with delay ${delay}")
         }
-        Log.e("SensorHandler", "Register ${sensor} with delay ${delay}")
     }
 
     fun updateAccuracy(delay: Int){

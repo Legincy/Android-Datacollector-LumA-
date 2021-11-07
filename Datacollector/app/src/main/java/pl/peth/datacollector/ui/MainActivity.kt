@@ -1,9 +1,9 @@
 package pl.peth.datacollector.ui
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -15,7 +15,8 @@ import androidx.navigation.ui.setupWithNavController
 import pl.peth.datacollector.R
 import pl.peth.datacollector.api.APIHandler
 import pl.peth.datacollector.databinding.MainActivityBinding
-import pl.peth.datacollector.sensor.SensorHandler
+import pl.peth.datacollector.ui.manager.PermissionManager
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,12 +28,27 @@ class MainActivity : AppCompatActivity() {
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
         binding = DataBindingUtil.setContentView<MainActivityBinding>(
-            this, R.layout.main_activity)
+            this, R.layout.main_activity
+        )
             .apply {
                 lifecycleOwner = this@MainActivity
             }
+
+        preparePermissions()
         setupNavigation()
-        checkPermissions()
+    }
+
+    private fun preparePermissions(){
+        val permissions = listOf<String>(
+            Manifest.permission.INTERNET,
+            Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.READ_PHONE_STATE
+        )
+        //            Manifest.permission.ACCESS_COARSE_LOCATION,
+
+        val managePermissions = PermissionManager(this, permissions,2)
+
+        managePermissions.checkPermissions()
     }
 
     private fun setupNavigation() {
@@ -44,22 +60,6 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView?.setupWithNavController(navController)
     }
 
-    private fun checkPermissions() {
-        if (ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-        ) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION)
-            ) {
-            } else {
-                ActivityCompat.requestPermissions(this,
-                    arrayOf(android.Manifest.permission.READ_PHONE_STATE),
-                    2)
-            }
-        } else {
-            // Permission has already been granted
-        }
-    }
 
     companion object {
         fun buildIntent(context: Context) = Intent(context, MainActivity::class.java)
