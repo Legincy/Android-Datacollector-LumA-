@@ -1,0 +1,92 @@
+package pl.peth.datacollector.ui.bottomNav
+
+import android.content.Context
+import android.content.Intent
+import android.hardware.*
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import androidx.fragment.app.Fragment
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import pl.peth.datacollector.R
+import pl.peth.datacollector.databinding.SensorFragmentBinding
+import pl.peth.datacollector.sensor.SensorHandler
+import pl.peth.datacollector.ui.MainActivity
+
+
+class SensorFragment() : Fragment() {
+
+    private var binding: SensorFragmentBinding? = null
+    private val sensorFragmentViewModel: SensorFragmentViewModel by viewModel()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View? {
+        binding = SensorFragmentBinding.inflate(layoutInflater)
+            .apply {
+                lifecycleOwner = this@SensorFragment
+                viewModel = SensorFragmentViewModel()
+            }
+        setupDropDowns()
+        setUpSensorHandler()
+        return binding?.root
+    }
+
+    private fun setUpSensorHandler() {
+        sensorHandler = SensorHandler(MainActivity.sensorManager, this::handleSensorData)
+    }
+
+    private fun handleSensorData(event: SensorEvent) {
+        sensorFragmentViewModel.dispatchToAPI(event, sensorHandler.UI_SELECTED_SENSOR_STR!!)
+    }
+
+    private fun setupDropDowns() {
+        val accuracyArray = resources.getStringArray(R.array.dropDownAccuracyItems)
+        val sensorArray = resources.getStringArray(R.array.dropDownSensorItems)
+        val accuracyArrayAdapter =
+            ArrayAdapter(requireContext(), R.layout.drop_down_item, accuracyArray)
+        val sensorArrayAdapter =
+            ArrayAdapter(requireContext(), R.layout.drop_down_item, sensorArray)
+
+        binding?.accuracyDropDownText?.setAdapter(accuracyArrayAdapter)
+        binding?.sensorDropDownText?.setAdapter(sensorArrayAdapter)
+
+        binding?.sensorDropDownText?.setOnItemClickListener { parent, view, position, id ->
+            var sensor: Int? = null
+            when (id) {
+                0L -> sensor = Sensor.TYPE_ACCELEROMETER
+                1L -> sensor = Sensor.TYPE_GYROSCOPE
+                2L -> sensor = Sensor.TYPE_LIGHT
+                3L -> sensor = Sensor.TYPE_PROXIMITY
+            }
+
+            if (sensor != null) sensorHandler.updateSensor(sensor)
+        }
+
+        binding?.accuracyDropDownText?.setOnItemClickListener { parent, view, position, id ->
+            var delay: Int? = null
+            when (id) {
+                0L -> delay = SensorManager.SENSOR_DELAY_FASTEST
+                1L -> delay = SensorManager.SENSOR_DELAY_NORMAL
+                2L -> delay = -1
+                3L -> delay = -2
+            }
+
+            if (delay != null) sensorHandler.updateAccuracy(delay)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding = null
+    }
+
+    companion object {
+        fun buildIntent(context: Context) = Intent(context, SensorFragment::class.java)
+        lateinit var sensorHandler: SensorHandler
+    }
+}

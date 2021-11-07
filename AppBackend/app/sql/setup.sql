@@ -91,9 +91,7 @@ CREATE TABLE `light` (
 CREATE TABLE `proximity` (
   `id` int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
-  `x` float NOT NULL,
-  `y` float NOT NULL,
-  `z` float NOT NULL,
+  `value` float NOT NULL,
   `device_id` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

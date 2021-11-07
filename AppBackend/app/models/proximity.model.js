@@ -1,9 +1,7 @@
 const sql = require('./db');
 
 const Proximity = function (data) {
-    this.x = data.x;
-    this.y = data.y;
-    this.z = data.z;
+    this.value = data.value;
     this.device_id = data.deviceid;
 };
 

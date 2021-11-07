@@ -3,4 +3,18 @@
     <string name="tab_text_sensor">Sensor</string>
     <string name="tab_text_position">Position</string>
     <string name="tab_text_3">Tab 3</string>
+    
+    <string-array name="dropDownAccuracyItems">
+        <item>Fast</item>
+        <item>Normal</item>
+        <item>Slow</item>
+        <item>Stop</item>
+    </string-array>
+
+    <string-array name="dropDownSensorItems">
+        <item name="sensor_mode_accelerometer">Accelerometer</item>
+        <item name="sensor_mode_gyroscope">Gyroscope</item>
+        <item name="sensor_mode_light">Lightsensor</item>
+        <item name="sensor_mode_proximity">Proximity</item>
+    </string-array>
 </resources>

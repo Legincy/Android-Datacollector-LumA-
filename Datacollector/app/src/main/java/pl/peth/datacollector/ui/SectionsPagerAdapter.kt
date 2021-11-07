@@ -1,4 +1,4 @@
-package pl.peth.datacollector.ui.main
+package pl.peth.datacollector.ui
 
 import android.content.Context
 import androidx.fragment.app.Fragment
@@ -6,7 +6,10 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import pl.peth.datacollector.R
 import pl.peth.datacollector.api.APIHandler
+import pl.peth.datacollector.ui.bottomNav.PositionFragment
+import pl.peth.datacollector.ui.bottomNav.SensorFragment
 
+/**
 private val TAB_TITLES = arrayOf(
     R.string.tab_text_sensor,
     R.string.tab_text_position,
@@ -45,4 +48,6 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager, ap
     override fun getCount(): Int {
         return 3
     }
+
 }
+        **/

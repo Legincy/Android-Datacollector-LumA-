@@ -1,0 +1,62 @@
+# ########
+# GRADLE #
+# ########
+.gradle
+/local.properties
+build
+# ###############
+# IntelliJ IDEA #
+# ###############
+.idea
+classes
+*.iml
+gen-external-apklibs
+out/
+# #########
+# Eclipse #
+# #########
+.settings
+.classpath
+.project
+gen
+bin
+# #######
+# Maven #
+# #######
+target
+# ##########
+# Calabash #
+# ##########
+test_servers
+reports.html
+screenshot_*.png
+# ###############
+# Android Tools #
+# ###############
+**/project.properties
+*.sqlite
+.DS_Store
+/device-*.png
+*.apk
+# ########
+# Kotlin #
+# ########
+*.class
+*.log
+# ###################
+# SonarQube Scanner #
+# ###################
+.scannerwork
+# #################
+# gradle-profiler #
+# #################
+profile-out*
+# #################
+# jacoco #
+# #################
+jacoco.exec
+# #################
+# branchdiff.sh #
+# #################
+diff
+

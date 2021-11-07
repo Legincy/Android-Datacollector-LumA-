@@ -1,4 +1,4 @@
-package pl.peth.datacollector.ui.main
+package pl.peth.datacollector.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,16 +8,17 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import pl.peth.datacollector.R
-import pl.peth.datacollector.databinding.FragmentMainBinding
+import pl.peth.datacollector.databinding.SensorFragmentBinding
+
 
 /**
  * A placeholder fragment containing a simple view.
  */
 class PlaceholderFragment : Fragment() {
 
+    /**
     private lateinit var pageViewModel: PageViewModel
-    private var _binding: FragmentMainBinding? = null
+    private var _binding: SensorFragmentBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -32,13 +33,13 @@ class PlaceholderFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
 
-        _binding = FragmentMainBinding.inflate(inflater, container, false)
+        _binding = SensorFragmentBinding.inflate(inflater, container, false)
         val root = binding.root
 
-        val textView: TextView = binding.sectionLabel
+        val textView: TextView = binding.tvRaw
         pageViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
@@ -70,4 +71,5 @@ class PlaceholderFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+    **/
 }
