@@ -39,7 +39,7 @@
                 android:fontFamily="sans-serif"
                 android:inputType="none"
                 android:padding="14dp"
-                android:text="@={viewModel.sensor}"
+                android:text="@={viewModel.sensorMenu}"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -68,7 +68,7 @@
                 android:fontFamily="sans-serif"
                 android:inputType="none"
                 android:padding="14dp"
-                android:text="@={viewModel.accuracy}"
+                android:text="@={viewModel.accuracyMenu}"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -76,9 +76,9 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/sensorResult"
-            android:layout_width="wrap_content"
+            android:layout_width="210dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="40dp"
             android:layout_marginEnd="20dp"
             android:theme="@style/dropDownMenuStyle"
             app:boxStrokeColor="@color/themeColor"
@@ -89,7 +89,7 @@
 
             <AutoCompleteTextView
                 android:id="@+id/sensorResultText"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif"

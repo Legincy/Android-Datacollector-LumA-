@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.peth.datacollector.R
@@ -26,11 +27,11 @@ class SensorFragment() : Fragment() {
                 lifecycleOwner = this@SensorFragment
                 viewModel = sensorFragmentViewModel
             }
-        setupDropDowns()
+        setUpDropDowns()
         return binding?.root
     }
 
-    private fun setupDropDowns() {
+    private fun setUpDropDowns() {
         val accuracyArray = resources.getStringArray(R.array.dropDownAccuracyItems)
         val sensorArray = resources.getStringArray(R.array.dropDownSensorItems)
         val accuracyArrayAdapter =
@@ -40,6 +41,18 @@ class SensorFragment() : Fragment() {
 
         binding?.accuracyDropDownText?.setAdapter(accuracyArrayAdapter)
         binding?.sensorDropDownText?.setAdapter(sensorArrayAdapter)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        sensorFragmentViewModel.sensorMenu.observe(viewLifecycleOwner, {
+            sensorFragmentViewModel.onSensorUpdate()
+            Toast.makeText(activity, "sensor", Toast.LENGTH_SHORT).show()
+        })
+        sensorFragmentViewModel.accuracyMenu.observe(viewLifecycleOwner, {
+            sensorFragmentViewModel.onAccuracyUpdate()
+            Toast.makeText(activity, "accuracy", Toast.LENGTH_SHORT).show()
+        })
     }
 
     override fun onDestroy() {
@@ -63,8 +76,8 @@ class SensorFragment() : Fragment() {
     private lateinit var sensorListener: SensorEventListener
 
     //Variables
-    private var UI_SELECTED_ACCURACY: Int = SensorManager.SENSOR_DELAY_FASTEST
-    private var UI_SELECTED_SENSOR: Any = Sensor.TYPE_ACCELEROMETER
+        private var UI_SELECTED_ACCURACY: Int = SensorManager.SENSOR_DELAY_FASTEST
+        private var UI_SELECTED_SENSOR: Any = Sensor.TYPE_ACCELEROMETER
     private var lastUpdate: Long = System.currentTimeMillis()
 
     private val apiHandler: APIHandler = pagerAdapter.apiHandler

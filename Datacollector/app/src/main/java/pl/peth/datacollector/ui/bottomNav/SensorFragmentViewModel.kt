@@ -13,27 +13,50 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
     SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
-    private lateinit var gyroscope: Sensor
+    private lateinit var sensor: Sensor
+    private var sensorType: Int = Sensor.TYPE_ACCELEROMETER
+    private var accuracy: Int = SensorManager.SENSOR_DELAY_FASTEST
     val sensorLiveData = MutableLiveData<String>()
-    val sensor = MutableLiveData<String>()
-    val accuracy = MutableLiveData<String>()
+    val sensorMenu = MutableLiveData<String>()
+    val accuracyMenu = MutableLiveData<String>()
 
-    init {
+    private fun setUpSensor() {
+
+        sensorManager =
+            getApplication<Application>().getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        sensor = sensorManager.getDefaultSensor(sensorType)
+        sensorManager.registerListener(this, sensor, accuracy)
+    }
+
+    fun onSensorUpdate() {
+        when (sensorMenu.value) {
+            "ACCELEROMETER" -> sensorType = Sensor.TYPE_ACCELEROMETER
+            "GYROSCOPE" -> sensorType = Sensor.TYPE_GYROSCOPE
+            "TYPE_LIGHT" -> sensorType = Sensor.TYPE_LIGHT
+            "TYPE_PROXIMITY" -> sensorType = Sensor.TYPE_PROXIMITY
+        }
         setUpSensor()
     }
 
-    private fun setUpSensor() {
-        sensorManager =
-            getApplication<Application>().getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)
-        sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_NORMAL)
+    fun onAccuracyUpdate() {
+
+        when (accuracyMenu.value) {
+            "Fast" -> accuracy = SensorManager.SENSOR_DELAY_FASTEST
+            "Normal" -> accuracy = SensorManager.SENSOR_DELAY_FASTEST
+            "slow" -> accuracy = 1000000
+            "Stop" -> sensorManager.unregisterListener(this)
+        }
+        setUpSensor()
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
+
         sensorLiveData.value =
-            "X =" + (event?.values?.get(0) ?: "Null") +
+            sensorMenu.value +
+                    "\nX =" + (event?.values?.get(0) ?: "Null") +
                     "\nY =" + (event?.values?.get(1) ?: "Null") +
-                    "\nZ =" + (event?.values?.get(2) ?: "Null")
+                    "\nZ =" + (event?.values?.get(2) ?: "Null") +
+                    "\n" + accuracyMenu.value
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {

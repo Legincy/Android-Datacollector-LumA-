@@ -12,9 +12,9 @@
     </string-array>
 
     <string-array name="dropDownSensorItems">
-        <item>Beschleunigungssensor</item>
-        <item>Gyroskop</item>
-        <item>Lichtsensor</item>
-        <item>Annäherungssensor</item>
+        <item>ACCELEROMETER</item>
+        <item>GYROSCOPE</item>
+        <item>TYPE_LIGHT</item>
+        <item>TYPE_PROXIMITY</item>
     </string-array>
 </resources>
