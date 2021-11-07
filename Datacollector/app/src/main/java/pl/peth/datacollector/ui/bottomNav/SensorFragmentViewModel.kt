@@ -15,21 +15,21 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
     private lateinit var sensorManager: SensorManager
     private lateinit var gyroscope: Sensor
     val sensorLiveData = MutableLiveData<String>()
+    val sensor = MutableLiveData<String>()
+    val accuracy = MutableLiveData<String>()
 
     init {
         setUpSensor()
     }
 
     private fun setUpSensor() {
-
         sensorManager =
             getApplication<Application>().getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+        gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)
         sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_NORMAL)
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
-
         sensorLiveData.value =
             "X =" + (event?.values?.get(0) ?: "Null") +
                     "\nY =" + (event?.values?.get(1) ?: "Null") +
