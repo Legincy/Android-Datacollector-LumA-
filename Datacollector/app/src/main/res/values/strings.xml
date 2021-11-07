@@ -7,14 +7,14 @@
     <string-array name="dropDownAccuracyItems">
         <item>Fast</item>
         <item>Normal</item>
-        <item>slow</item>
+        <item>Slow</item>
         <item>Stop</item>
     </string-array>
 
     <string-array name="dropDownSensorItems">
-        <item>Beschleunigungssensor</item>
-        <item>Gyroskop</item>
-        <item>Lichtsensor</item>
-        <item>Annäherungssensor</item>
+        <item name="sensor_mode_accelerometer">Accelerometer</item>
+        <item name="sensor_mode_gyroscope">Gyroscope</item>
+        <item name="sensor_mode_light">Lightsensor</item>
+        <item name="sensor_mode_proximity">Proximity</item>
     </string-array>
 </resources>

@@ -3,6 +3,8 @@ package pl.peth.datacollector.ui
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -13,15 +15,16 @@ import androidx.navigation.ui.setupWithNavController
 import pl.peth.datacollector.R
 import pl.peth.datacollector.api.APIHandler
 import pl.peth.datacollector.databinding.MainActivityBinding
+import pl.peth.datacollector.sensor.SensorHandler
 
 class MainActivity : AppCompatActivity() {
 
     private var binding: MainActivityBinding? = null
-    private lateinit var apiHandler: APIHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         apiHandler = APIHandler(this)
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
         binding = DataBindingUtil.setContentView<MainActivityBinding>(
             this, R.layout.main_activity)
@@ -29,12 +32,7 @@ class MainActivity : AppCompatActivity() {
                 lifecycleOwner = this@MainActivity
             }
         setupNavigation()
-        /** TO DO **/
-        //val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager, apiHandler)
-        //val viewPager: ViewPager = binding.viewPager
-        //viewPager.adapter = sectionsPagerAdapter
-        //val tabs: TabLayout = binding.tabs
-        //tabs.setupWithViewPager(viewPager)
+        checkPermissions()
     }
 
     private fun setupNavigation() {
@@ -65,5 +63,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         fun buildIntent(context: Context) = Intent(context, MainActivity::class.java)
+        lateinit var apiHandler: APIHandler
+        lateinit var sensorManager: SensorManager
     }
 }
