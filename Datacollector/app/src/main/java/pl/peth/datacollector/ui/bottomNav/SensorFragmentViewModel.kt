@@ -14,14 +14,13 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
 
     private lateinit var sensorManager: SensorManager
     private lateinit var sensor: Sensor
-    private var sensorType: Int = Sensor.TYPE_ACCELEROMETER
+    private var sensorType: Int = Sensor.TYPE_LIGHT
     private var accuracy: Int = SensorManager.SENSOR_DELAY_FASTEST
     val sensorLiveData = MutableLiveData<String>()
     val sensorMenu = MutableLiveData<String>()
     val accuracyMenu = MutableLiveData<String>()
 
-    private fun setUpSensor() {
-
+    fun setUpSensor() {
         sensorManager =
             getApplication<Application>().getSystemService(Context.SENSOR_SERVICE) as SensorManager
         sensor = sensorManager.getDefaultSensor(sensorType)
@@ -39,7 +38,6 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
     }
 
     fun onAccuracyUpdate() {
-
         when (accuracyMenu.value) {
             "Fast" -> accuracy = SensorManager.SENSOR_DELAY_FASTEST
             "Normal" -> accuracy = SensorManager.SENSOR_DELAY_FASTEST
@@ -66,6 +64,4 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
     fun unregisterSensors() {
         sensorManager.unregisterListener(this)
     }
-
-
 }

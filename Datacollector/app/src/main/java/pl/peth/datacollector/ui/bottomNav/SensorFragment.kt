@@ -55,6 +55,11 @@ class SensorFragment() : Fragment() {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        sensorFragmentViewModel.setUpSensor()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         sensorFragmentViewModel.unregisterSensors()
