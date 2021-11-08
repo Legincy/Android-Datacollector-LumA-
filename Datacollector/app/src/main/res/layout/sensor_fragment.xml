@@ -16,6 +16,15 @@
         android:background="@color/darkMode"
         tools:context=".ui.PlaceholderFragment">
 
+        <com.jjoe64.graphview.GraphView
+                android:layout_width="388dp"
+                android:layout_height="226dp"
+                android:id="@+id/graphSensor"
+                app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="72dp"
+                app:layout_constraintHorizontal_bias="0.478"
+
+        />
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/sensorDropDown"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"

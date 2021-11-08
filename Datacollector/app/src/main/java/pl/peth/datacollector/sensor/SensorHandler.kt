@@ -89,19 +89,20 @@ class SensorHandler {
         Log.e("SensorHandler", "" + UI_SELECTED_SENSOR + " " + UI_SELECTED_ACCURACY)
 
         unregisterListener()
+        Log.e("Register", delay.toString())
         if(delay != null) {
             when(UI_SELECTED_ACCURACY){
-                -1 -> delay = 1000000
+                -1 -> delay = 10000000
                 -2 -> unregisterListener()
-                else -> sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(UI_SELECTED_SENSOR), delay)
             }
+            sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(UI_SELECTED_SENSOR), delay)
             Log.e("SensorHandler", "Register ${sensor} with delay ${delay}")
         }
     }
 
     fun updateAccuracy(delay: Int){
         UI_SELECTED_ACCURACY = delay
-        if(UI_SELECTED_SENSOR != -1) updateSensor(UI_SELECTED_SENSOR)
+        updateSensor(UI_SELECTED_SENSOR)
     }
 
     fun unregisterListener(){
