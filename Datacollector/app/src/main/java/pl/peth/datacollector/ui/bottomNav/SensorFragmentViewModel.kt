@@ -12,17 +12,24 @@ import androidx.lifecycle.MutableLiveData
 class SensorFragmentViewModel(application: Application) : AndroidViewModel(application),
     SensorEventListener {
 
-    private lateinit var sensorManager: SensorManager
+    private var sensorManager: SensorManager
     private lateinit var sensor: Sensor
-    private var sensorType: Int = Sensor.TYPE_LIGHT
+    private var sensorType: Int = Sensor.TYPE_ACCELEROMETER
     private var accuracy: Int = SensorManager.SENSOR_DELAY_FASTEST
     val sensorLiveData = MutableLiveData<String>()
     val sensorMenu = MutableLiveData<String>()
     val accuracyMenu = MutableLiveData<String>()
+    var i = MutableLiveData<Int>()
 
-    fun setUpSensor() {
+
+    init {
         sensorManager =
             getApplication<Application>().getSystemService(Context.SENSOR_SERVICE) as SensorManager
+
+    }
+
+    private fun setUpSensor() {
+        sensorManager.unregisterListener(this)
         sensor = sensorManager.getDefaultSensor(sensorType)
         sensorManager.registerListener(this, sensor, accuracy)
     }
@@ -42,19 +49,28 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
             "Fast" -> accuracy = SensorManager.SENSOR_DELAY_FASTEST
             "Normal" -> accuracy = SensorManager.SENSOR_DELAY_FASTEST
             "slow" -> accuracy = 1000000
-            "Stop" -> sensorManager.unregisterListener(this)
+            "Stop" -> {
+                unregisterSensors()
+                return
+            }
         }
         setUpSensor()
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
-
-        sensorLiveData.value =
-            sensorMenu.value +
-                    "\nX =" + (event?.values?.get(0) ?: "Null") +
-                    "\nY =" + (event?.values?.get(1) ?: "Null") +
-                    "\nZ =" + (event?.values?.get(2) ?: "Null") +
-                    "\n" + accuracyMenu.value
+        if (i.value == null)
+            return
+        if (sensorType == Sensor.TYPE_LIGHT || sensorType == Sensor.TYPE_PROXIMITY)
+            sensorLiveData.value =
+                sensorMenu.value +
+                        "\nX = " + (event?.values?.get(0) ?: "Null")
+        else
+            sensorLiveData.value =
+                sensorMenu.value +
+                        "\nX =" + (event?.values?.get(0) ?: "Null") +
+                        "\nY =" + (event?.values?.get(1) ?: "Null") +
+                        "\nZ =" + (event?.values?.get(2) ?: "Null") +
+                        "\n" + accuracyMenu.value
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
