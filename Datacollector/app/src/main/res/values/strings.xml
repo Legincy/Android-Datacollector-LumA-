@@ -14,7 +14,7 @@
     <string-array name="dropDownSensorItems">
         <item>ACCELEROMETER</item>
         <item>GYROSCOPE</item>
-        <item>TYPE_LIGHT</item>
-        <item>TYPE_PROXIMITY</item>
+        <item>LIGHT</item>
+        <item>PROXIMITY</item>
     </string-array>
 </resources>

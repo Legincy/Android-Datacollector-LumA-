@@ -40,8 +40,8 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
         when (sensorMenu.value) {
             "ACCELEROMETER" -> sensorType = Sensor.TYPE_ACCELEROMETER
             "GYROSCOPE" -> sensorType = Sensor.TYPE_GYROSCOPE
-            "TYPE_LIGHT" -> sensorType = Sensor.TYPE_LIGHT
-            "TYPE_PROXIMITY" -> sensorType = Sensor.TYPE_PROXIMITY
+            "LIGHT" -> sensorType = Sensor.TYPE_LIGHT
+            "PROXIMITY" -> sensorType = Sensor.TYPE_PROXIMITY
         }
         setUpSensor()
     }
@@ -67,8 +67,7 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
 
         if (sensorType == Sensor.TYPE_LIGHT || sensorType == Sensor.TYPE_PROXIMITY)
             sensorLiveData.value =
-                sensorMenu.value +
-                        "\nX = " + (event?.values?.get(0))
+                        event?.values?.get(0).toString()
         else {
             sensorLiveData.value =
                         "X =" + (round(number = event?.values?.get(0))) +
