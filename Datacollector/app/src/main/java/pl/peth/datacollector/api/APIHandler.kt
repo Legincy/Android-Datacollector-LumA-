@@ -2,11 +2,13 @@ package pl.peth.datacollector.api
 
 import android.content.Context
 import android.provider.Settings
+import android.util.Log
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import ru.gildor.coroutines.okhttp.await
+import java.net.ConnectException
 import java.net.SocketTimeoutException
 
 class APIHandler {
@@ -54,6 +56,9 @@ class APIHandler {
             try {
                 result = client.newCall(request).await()
             } catch (e: SocketTimeoutException) {
+                connection = false
+            } catch (e: ConnectException){
+                Log.e("ConnectionException", "triggered ")
                 connection = false
             }
         } else {
