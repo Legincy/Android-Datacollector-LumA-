@@ -17,7 +17,7 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
     private var sensorManager: SensorManager
     private lateinit var sensor: Sensor
     private var sensorType: Int = Sensor.TYPE_ACCELEROMETER
-    private var accuracy: Int = SensorManager.SENSOR_DELAY_FASTEST
+    private var accuracy: Int = SensorManager.SENSOR_DELAY_NORMAL
     val sensorLiveData = MutableLiveData<String>()
     val sensorMenu = MutableLiveData<String>()
     val accuracyMenu = MutableLiveData<String>()
@@ -27,10 +27,10 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
     init {
         sensorManager =
             getApplication<Application>().getSystemService(Context.SENSOR_SERVICE) as SensorManager
-
     }
 
     private fun setUpSensor() {
+
         sensorManager.unregisterListener(this)
         sensor = sensorManager.getDefaultSensor(sensorType)
         sensorManager.registerListener(this, sensor, accuracy)
@@ -68,14 +68,16 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
         if (sensorType == Sensor.TYPE_LIGHT || sensorType == Sensor.TYPE_PROXIMITY)
             sensorLiveData.value =
                 sensorMenu.value +
-                        "\nX = " + (event?.values?.get(0) ?: "Null")
-        else
+                        "\nX = " + (event?.values?.get(0))
+        else {
+            if (accuracyMenu.value == null) accuracyMenu.value = "Normal"
             sensorLiveData.value =
                 sensorMenu.value +
                         "\nX =" + (round(number = event?.values?.get(0))) +
                         "\nY =" + (round(number = event?.values?.get(1))) +
                         "\nZ =" + (round(number = event?.values?.get(2))) +
                         "\n" + accuracyMenu.value
+        }
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
