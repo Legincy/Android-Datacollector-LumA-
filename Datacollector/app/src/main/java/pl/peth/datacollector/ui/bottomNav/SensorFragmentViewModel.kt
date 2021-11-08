@@ -70,7 +70,6 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
                 sensorMenu.value +
                         "\nX = " + (event?.values?.get(0))
         else {
-            if (accuracyMenu.value == null) accuracyMenu.value = "Normal"
             sensorLiveData.value =
                 sensorMenu.value +
                         "\nX =" + (round(number = event?.values?.get(0))) +
