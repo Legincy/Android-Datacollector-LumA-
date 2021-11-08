@@ -8,6 +8,8 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
 class SensorFragmentViewModel(application: Application) : AndroidViewModel(application),
     SensorEventListener {
@@ -58,8 +60,11 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
-        if (valid.value == null || accuracyMenu.value == "Stop")
+        if (valid.value == null || accuracyMenu.value == "Stop") {
+            unregisterSensors()
             return
+        }
+
         if (sensorType == Sensor.TYPE_LIGHT || sensorType == Sensor.TYPE_PROXIMITY)
             sensorLiveData.value =
                 sensorMenu.value +
@@ -67,9 +72,9 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
         else
             sensorLiveData.value =
                 sensorMenu.value +
-                        "\nX =" + (event?.values?.get(0) ?: "Null") +
-                        "\nY =" + (event?.values?.get(1) ?: "Null") +
-                        "\nZ =" + (event?.values?.get(2) ?: "Null") +
+                        "\nX =" + (round(number = event?.values?.get(0))) +
+                        "\nY =" + (round(number = event?.values?.get(1))) +
+                        "\nZ =" + (round(number = event?.values?.get(2))) +
                         "\n" + accuracyMenu.value
     }
 
@@ -79,5 +84,12 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
 
     fun unregisterSensors() {
         sensorManager.unregisterListener(this)
+        sensorLiveData.value = "Stopped"
+    }
+
+    private fun round(number: Float?): Double {
+        val df = DecimalFormat("#.##")
+        df.roundingMode = RoundingMode.FLOOR
+        return df.format(number).toDouble()
     }
 }
