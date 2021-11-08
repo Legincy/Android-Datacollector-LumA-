@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="pl.peth.datacollector.ui.bottomNav.SensorFragmentViewModel" />
@@ -13,20 +14,20 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/darkMode"
+        android:background="@color/white"
         tools:context=".ui.PlaceholderFragment">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/sensorDropDown"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="260dp"
+            android:layout_width="205dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="350dp"
+            android:hint="Sensor"
             android:theme="@style/dropDownMenuStyle"
             app:boxStrokeColor="@color/themeColor"
             app:endIconTint="@color/black"
-            android:hint="Sensor"
             app:hintTextColor="@color/themeColor"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -48,7 +49,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/accuracyDropDown"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="260dp"
+            android:layout_width="205dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
@@ -76,22 +77,23 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/sensorResult"
-            android:layout_width="210dp"
+            android:layout_width="160dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginStart="10dp"
+            android:background="@color/white"
             android:theme="@style/dropDownMenuStyle"
             app:boxStrokeColor="@color/themeColor"
             app:endIconTint="@color/black"
-            app:hintTextColor="@color/themeColor"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/accuracyDropDown">
+            app:hintTextColor="@color/white"
+            app:layout_constraintStart_toEndOf="@id/sensorDropDown"
+            app:layout_constraintTop_toTopOf="@id/sensorDropDown">
 
-            <AutoCompleteTextView
+            <TextView
                 android:id="@+id/sensorResultText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:background="@color/white"
                 android:fontFamily="sans-serif"
                 android:inputType="none"
                 android:padding="14dp"

@@ -71,11 +71,9 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
                         "\nX = " + (event?.values?.get(0))
         else {
             sensorLiveData.value =
-                sensorMenu.value +
-                        "\nX =" + (round(number = event?.values?.get(0))) +
+                        "X =" + (round(number = event?.values?.get(0))) +
                         "\nY =" + (round(number = event?.values?.get(1))) +
-                        "\nZ =" + (round(number = event?.values?.get(2))) +
-                        "\n" + accuracyMenu.value
+                        "\nZ =" + (round(number = event?.values?.get(2)))
         }
     }
 
@@ -89,7 +87,7 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
     }
 
     private fun round(number: Float?): Double {
-        val df = DecimalFormat("#.##")
+        val df = DecimalFormat("#.######")
         df.roundingMode = RoundingMode.FLOOR
         return df.format(number).toDouble()
     }
