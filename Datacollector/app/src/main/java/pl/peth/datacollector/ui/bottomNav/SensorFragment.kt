@@ -46,13 +46,11 @@ class SensorFragment() : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         sensorFragmentViewModel.sensorMenu.observe(viewLifecycleOwner, {
-            sensorFragmentViewModel.i.value = 1
+            sensorFragmentViewModel.valid.value = true
             sensorFragmentViewModel.onSensorUpdate()
-            Toast.makeText(activity, "sensor", Toast.LENGTH_SHORT).show()
         })
         sensorFragmentViewModel.accuracyMenu.observe(viewLifecycleOwner, {
             sensorFragmentViewModel.onAccuracyUpdate()
-            Toast.makeText(activity, "accuracy", Toast.LENGTH_SHORT).show()
         })
     }
 

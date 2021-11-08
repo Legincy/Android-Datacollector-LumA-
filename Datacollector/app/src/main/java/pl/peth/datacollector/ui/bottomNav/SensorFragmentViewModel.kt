@@ -19,7 +19,7 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
     val sensorLiveData = MutableLiveData<String>()
     val sensorMenu = MutableLiveData<String>()
     val accuracyMenu = MutableLiveData<String>()
-    var i = MutableLiveData<Int>()
+    var valid = MutableLiveData<Boolean>()
 
 
     init {
@@ -58,7 +58,7 @@ class SensorFragmentViewModel(application: Application) : AndroidViewModel(appli
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
-        if (i.value == null)
+        if (valid.value == null || accuracyMenu.value == "Stop")
             return
         if (sensorType == Sensor.TYPE_LIGHT || sensorType == Sensor.TYPE_PROXIMITY)
             sensorLiveData.value =

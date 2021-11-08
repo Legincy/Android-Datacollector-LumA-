@@ -22,7 +22,7 @@
             android:layout_width="260dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="350dp"
+            android:layout_marginTop="50dp"
             android:theme="@style/dropDownMenuStyle"
             app:boxStrokeColor="@color/themeColor"
             app:endIconTint="@color/black"
