@@ -23,9 +23,11 @@ Device.findById = (deviceId, result) => {
 };
 
 Device.create = (data, result) => {
-    console.log(data)
     sql.query(`INSERT INTO device SET id= '${data.deviceId}'`, (err, res) => {
         if (err) {
+            if (err.code === 'ER_DUP_ENTRY') {
+                return
+            }
             console.log("[ERROR]: ", err);
             result(err, null);
             return;
