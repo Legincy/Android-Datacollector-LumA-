@@ -57,6 +57,7 @@ class GraphManager {
         barSeries.setDrawValuesOnTop(true)
         barSeries.setValuesOnTopColor(Color.RED)
         loadSeries(sensorType)
+        updateGraph()
     }
 
     fun addData(sensorType: Int, data: SensorEvent) {
@@ -137,9 +138,16 @@ class GraphManager {
             graph.getViewport()?.setMaxX(3.0)
 
             staticLabelsFormatter.setHorizontalLabels(arrayOf("X", "Y", "Z"))
-        } else if ((sensorType == Sensor.TYPE_LIGHT) || (sensorType == Sensor.TYPE_PROXIMITY)) {
+        } else if ((sensorType == Sensor.TYPE_LIGHT)) {
             graph.getViewport()?.setMinY(-1000.0)
             graph.getViewport()?.setMaxY(1000.0)
+            graph.getViewport()?.setMinX(1.0)
+            graph.getViewport()?.setMaxX(1.0)
+
+            staticLabelsFormatter.setHorizontalLabels(arrayOf("X", ""))
+        }else if ((sensorType == Sensor.TYPE_PROXIMITY)){
+            graph.getViewport()?.setMinY(-10.0)
+            graph.getViewport()?.setMaxY(10.0)
             graph.getViewport()?.setMinX(1.0)
             graph.getViewport()?.setMaxX(1.0)
 
@@ -147,9 +155,11 @@ class GraphManager {
         }
 
         graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
+        updateGraph()
     }
 
     private fun resetSeries() {
         graph.removeAllSeries()
+        updateGraph()
     }
 }

@@ -24,7 +24,7 @@
             android:id="@+id/bottom_nav"
             android:layout_width="match_parent"
             android:layout_height="55dp"
-            android:background="@color/cardview_dark_background"
+            android:background="@color/cardview_light_background"
             app:itemIconSize="28dp"
             app:itemIconTint="@drawable/nav_bar_color"
             app:itemTextAppearanceActive="@style/navigationBarTextActiveStyle"

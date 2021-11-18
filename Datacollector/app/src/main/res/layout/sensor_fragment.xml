@@ -13,7 +13,7 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/darkMode"
+        android:background="@color/cardview_light_background"
         tools:context=".ui.PlaceholderFragment">
 
         <com.jjoe64.graphview.GraphView
@@ -83,33 +83,5 @@
                 android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/sensorResult"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="80dp"
-            android:layout_marginEnd="20dp"
-            android:theme="@style/dropDownMenuStyle"
-            app:boxStrokeColor="@color/themeColor"
-            app:endIconTint="@color/black"
-            app:hintTextColor="@color/themeColor"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/accuracyDropDown">
-
-            <AutoCompleteTextView
-                android:id="@+id/sensorResultText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:fontFamily="sans-serif"
-                android:inputType="none"
-                android:padding="14dp"
-                android:text="Result"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </com.google.android.material.textfield.TextInputLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
