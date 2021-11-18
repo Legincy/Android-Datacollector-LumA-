@@ -57,6 +57,25 @@ CREATE TABLE `device` (
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `gps_type`
+--
+
+CREATE TABLE `gps_type` (
+  `id` int(11) NOT NULL,
+  `type` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Daten für Tabelle `gps_type`
+--
+
+INSERT INTO `gps_type` (`id`, `type`) VALUES
+(1, 'NETWORK_PROVIDER'),
+(2, 'GPS_PROVIDER');
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `gyroscope`
 --
 
@@ -85,6 +104,21 @@ CREATE TABLE `light` (
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `position`
+--
+
+CREATE TABLE `position` (
+  `id` int(11) NOT NULL,
+  `routen_id` int(11) NOT NULL,
+  `longitude` int(11) NOT NULL,
+  `latitude` int(11) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `type_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `proximity`
 --
 
@@ -93,6 +127,29 @@ CREATE TABLE `proximity` (
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
   `value` float NOT NULL,
   `device_id` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `route`
+--
+
+CREATE TABLE `route` (
+  `id` int(11) NOT NULL,
+  `device_id` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `snap`
+--
+
+CREATE TABLE `snap` (
+  `id` int(11) NOT NULL,
+  `route_id` int(11) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -113,6 +170,12 @@ ALTER TABLE `device`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indizes für die Tabelle `gps_type`
+--
+ALTER TABLE `gps_type`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indizes für die Tabelle `gyroscope`
 --
 ALTER TABLE `gyroscope`
@@ -127,11 +190,33 @@ ALTER TABLE `light`
   ADD KEY `FOREIGN_LIGHT_DEVICE` (`device_id`);
 
 --
+-- Indizes für die Tabelle `position`
+--
+ALTER TABLE `position`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FOREIGN_ROUTE_POS` (`routen_id`),
+  ADD KEY `FOREIGN_GPSTYPE_POS` (`type_id`);
+
+--
 -- Indizes für die Tabelle `proximity`
 --
 ALTER TABLE `proximity`
   ADD PRIMARY KEY (`id`),
   ADD KEY `FOREIGN_PROX_DEVICE` (`device_id`);
+
+--
+-- Indizes für die Tabelle `route`
+--
+ALTER TABLE `route`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FOREIGN_ROUTE_DEV` (`device_id`);
+
+--
+-- Indizes für die Tabelle `snap`
+--
+ALTER TABLE `snap`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FOREIGN_SNAP_ROUTE` (`route_id`);
 
 --
 -- AUTO_INCREMENT für exportierte Tabellen
@@ -184,10 +269,29 @@ ALTER TABLE `light`
   ADD CONSTRAINT `FOREIGN_LIGHT_DEVICE` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`);
 
 --
+-- Constraints der Tabelle `position`
+--
+ALTER TABLE `position`
+  ADD CONSTRAINT `FOREIGN_GPSTYPE_POS` FOREIGN KEY (`type_id`) REFERENCES `gps_type` (`id`),
+  ADD CONSTRAINT `FOREIGN_ROUTE_POS` FOREIGN KEY (`routen_id`) REFERENCES `route` (`id`);
+
+--
 -- Constraints der Tabelle `proximity`
 --
 ALTER TABLE `proximity`
   ADD CONSTRAINT `FOREIGN_PROX_DEVICE` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`);
+
+--
+-- Constraints der Tabelle `route`
+--
+ALTER TABLE `route`
+  ADD CONSTRAINT `FOREIGN_ROUTE_DEV` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`);
+
+--
+-- Constraints der Tabelle `snap`
+--
+ALTER TABLE `snap`
+  ADD CONSTRAINT `FOREIGN_SNAP_ROUTE` FOREIGN KEY (`route_id`) REFERENCES `route` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
