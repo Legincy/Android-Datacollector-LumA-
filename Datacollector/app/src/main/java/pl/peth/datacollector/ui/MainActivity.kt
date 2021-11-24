@@ -3,12 +3,10 @@ package pl.peth.datacollector.ui
 import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -33,20 +31,21 @@ class MainActivity : AppCompatActivity() {
             .apply {
                 lifecycleOwner = this@MainActivity
             }
-
         preparePermissions()
         setupNavigation()
     }
 
-    private fun preparePermissions(){
+    private fun preparePermissions() {
         val permissions = listOf<String>(
             Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE,
-            Manifest.permission.READ_PHONE_STATE
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION
         )
         //            Manifest.permission.ACCESS_COARSE_LOCATION,
 
-        val managePermissions = PermissionManager(this, permissions,2)
+        val managePermissions = PermissionManager(this, permissions, 2)
 
         managePermissions.checkPermissions()
     }
