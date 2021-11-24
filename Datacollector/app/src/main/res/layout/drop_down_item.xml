@@ -2,7 +2,7 @@
     android:id="@+id/dropDownTextStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/darkMode"
+    android:background="@color/cardview_light_background"
     android:fontFamily="sans-serif"
     android:padding="6dp"
     android:text="TextView"

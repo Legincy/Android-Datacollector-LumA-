@@ -28,8 +28,6 @@ class SensorFragment() : Fragment() {
     private val sensorFragmentViewModel: SensorFragmentViewModel by viewModel()
 
     lateinit var graphManager: GraphManager
-    var lgs: LineGraphSeries<DataPoint> = LineGraphSeries()
-    var counter: Double = 1.0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,6 +50,7 @@ class SensorFragment() : Fragment() {
     }
 
     private fun handleSensorData(event: SensorEvent) {
+        if(sensorHandler.UI_SELECTED_SENSOR_STR == null) return;
         sensorFragmentViewModel.dispatchToAPI(event, sensorHandler.UI_SELECTED_SENSOR_STR!!)
         graphManager.addData(sensorHandler.UI_SELECTED_SENSOR, event)
     }

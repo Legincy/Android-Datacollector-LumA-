@@ -17,4 +17,20 @@
         <item name="sensor_mode_light">Lightsensor</item>
         <item name="sensor_mode_proximity">Proximity</item>
     </string-array>
+
+    <string-array name="dropDownPositionTechnologies">
+        <item name="position_mode_lm">Location Manager</item>
+        <item name="position_mode_flp">Fused Location Provider</item>
+    </string-array>
+
+    <string-array name="dropDownPositionModeLM">
+        <item>Network Provider</item>
+        <item>GPS Provider</item>
+    </string-array>
+
+    <string-array name="dropDownPositionModeFLP">
+        <item >1</item>
+        <item >2</item>
+    </string-array>
+
 </resources>
