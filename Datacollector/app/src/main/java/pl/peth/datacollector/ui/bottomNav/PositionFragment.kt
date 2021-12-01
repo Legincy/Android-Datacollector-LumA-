@@ -20,6 +20,7 @@ class PositionFragment : Fragment(){
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         positionManager = MainActivity.positionManager;
+        positionManager!!.setUp()
 
         binding = PositionFragmentBinding.inflate(layoutInflater)
             .apply {
@@ -66,28 +67,7 @@ class PositionFragment : Fragment(){
                 0: Location Manager
                 1: FusedLocationProvider
             */
-
-            when(posModeId){
-                0L -> {
-                    when(id){
-                        0L -> { lmMode = LocationManager.NETWORK_PROVIDER }
-                        1L -> { lmMode = LocationManager.GPS_PROVIDER }
-                    }
-                }
-                1L -> {
-                    when(id){
-                        0L -> { println(positionManager); positionManager?.setUpFLP();}
-                        1L -> { Log.e("Mode-update", "Balanced")}
-                        2L -> { Log.e("Mode-update", "Low Power ")}
-                        3L -> { Log.e("Mode-update", "Keine Power")}
-                        4L -> { Log.e("Mode-update", "Stop")}
-                    }
-                }
-            }
-
-            if(lmMode != null){
-                // positionManager?.update(lmMode!!, 0L, 0f);
-            }
+            positionManager?.update(posModeId, id)
         }
     }
 }
