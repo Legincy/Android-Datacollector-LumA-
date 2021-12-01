@@ -26,11 +26,15 @@
     <string-array name="dropDownPositionModeLM">
         <item>Network Provider</item>
         <item>GPS Provider</item>
+        <item>Stop</item>
     </string-array>
 
     <string-array name="dropDownPositionModeFLP">
-        <item >1</item>
-        <item >2</item>
+        <item>Balanced Power Accuracy</item>
+        <item>High Accuracy</item>
+        <item>Low Power</item>
+        <item>No Power</item>
+        <item>Stop</item>
     </string-array>
 
 </resources>

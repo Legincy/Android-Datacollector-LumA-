@@ -2,6 +2,7 @@ package pl.peth.datacollector.ui.bottomNav
 
 import android.location.LocationManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,8 +19,7 @@ class PositionFragment : Fragment(){
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        val pm: PositionManager = MainActivity.positionManager;
-        pm.setUp();
+        positionManager = MainActivity.positionManager;
 
         binding = PositionFragmentBinding.inflate(layoutInflater)
             .apply {
@@ -62,6 +62,11 @@ class PositionFragment : Fragment(){
         binding?.positionModeDropDownText?.setAdapter(positionModeAdapter)
 
         binding?.positionModeDropDownText?.setOnItemClickListener { parent, view, position, id ->
+            /*  -- POS-MODE-ID
+                0: Location Manager
+                1: FusedLocationProvider
+            */
+
             when(posModeId){
                 0L -> {
                     when(id){
@@ -69,11 +74,19 @@ class PositionFragment : Fragment(){
                         1L -> { lmMode = LocationManager.GPS_PROVIDER }
                     }
                 }
-                1L -> { null }
+                1L -> {
+                    when(id){
+                        0L -> { println(positionManager); positionManager?.setUpFLP();}
+                        1L -> { Log.e("Mode-update", "Balanced")}
+                        2L -> { Log.e("Mode-update", "Low Power ")}
+                        3L -> { Log.e("Mode-update", "Keine Power")}
+                        4L -> { Log.e("Mode-update", "Stop")}
+                    }
+                }
             }
 
             if(lmMode != null){
-                positionManager?.update(lmMode!!, 0L, 0f);
+                // positionManager?.update(lmMode!!, 0L, 0f);
             }
         }
     }
