@@ -2,8 +2,10 @@ package pl.peth.datacollector.api
 
 import android.content.Context
 import android.provider.Settings
+import android.util.Log
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import ru.gildor.coroutines.okhttp.await
@@ -29,8 +31,10 @@ class APIHandler {
         uniqueID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID)
         val data: HashMap<String, String> = hashMapOf("deviceid" to uniqueID)
 
-        postData("device", data)
-        connection = true
+        GlobalScope.launch {
+            postData("device", data)
+            connection = true
+        }
     }
 
     private suspend fun initRequest(data: String, targetAddr: String, methodType: String): Response? {
@@ -53,6 +57,7 @@ class APIHandler {
 
             try {
                 result = client.newCall(request).await()
+                println(result);
             } catch (e: SocketTimeoutException) {
                 connection = false
             }
@@ -72,14 +77,19 @@ class APIHandler {
         GlobalScope.launch { val response: Response? = initRequest("", target, "GET") }
     }
 
-    fun postData(dest: String, data: HashMap<String, String>) {
+    suspend fun postData(dest: String, data: HashMap<String, String>?): Response? {
         val target: String = "${API_ADDRESS}/${dest}"
-        var content: String = ""
-        data.forEach { key, value ->
-            content = content + "%s=%s&".format(key, value)
+        var content: String = "deviceid=${uniqueID}&"
+        var response: Response? = null;
+
+        if(data != null){
+            data.forEach { key, value ->
+                content = content + "%s=%s&".format(key, value)
+            }
         }
-        if (content.isNotEmpty()) {
-            GlobalScope.launch { val response: Response? = initRequest(content.dropLast(1), target, "POST") }
-        }
+
+        response = initRequest(content.dropLast(1), target, "POST")
+
+        return response;
     }
 }

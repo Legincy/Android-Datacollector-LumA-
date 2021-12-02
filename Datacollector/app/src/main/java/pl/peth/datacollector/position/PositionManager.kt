@@ -12,11 +12,17 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.OnSuccessListener
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import pl.peth.datacollector.api.APIHandler
 import pl.peth.datacollector.databinding.MainActivityBinding
 import pl.peth.datacollector.ui.MainActivity
 import pl.peth.datacollector.ui.bottomNav.PositionFragment
 
 class PositionManager {
+    private val apiHandler: APIHandler = MainActivity.apiHandler;
+    private var routeId: Int? = null;
+
     constructor()
 
     @SuppressLint("MissingPermission")
@@ -49,6 +55,18 @@ class PositionManager {
                 super.onLocationResult(locationRes)
                 val loc = locationRes.lastLocation
                 println("locationCallback: " + loc.latitude + ", " + loc.longitude)
+                val data: HashMap<String, String> = hashMapOf(
+                    "longitude" to loc.longitude.toString(),
+                    "latitude" to loc.longitude.toString(),
+                    "type" to "1",
+                    "route" to "${routeId}"
+                );
+
+                println(routeId);
+                GlobalScope.launch {
+                    val res = apiHandler.postData("position/add/position", data)
+                    println(res?.body?.string());
+                }
             }
         }
     }
@@ -65,8 +83,8 @@ class PositionManager {
     }
 
     @SuppressLint("MissingPermission")
-    fun update(posTech: Long, posMode: Long){
-
+    fun update(posTech: Long, posMode: Long, routeId: Int){
+        this.routeId = routeId;
         stopLocationManager();
         fusedLocationClient.removeLocationUpdates(locationCallback);
 

@@ -3,6 +3,8 @@ package pl.peth.datacollector.ui.bottomNav
 import android.hardware.SensorEvent
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import pl.peth.datacollector.api.APIHandler
 import pl.peth.datacollector.sensor.SensorHandler
 import pl.peth.datacollector.ui.MainActivity
@@ -35,7 +37,9 @@ class SensorFragmentViewModel : ViewModel() {
 
         val now: Long = System.currentTimeMillis()
         if (now - API_LAST_UPDATE > API_DELAY * 1000) {
-            apiHandler.postData(dest, data)
+            GlobalScope.launch {
+                apiHandler.postData(dest, data)
+            }
             API_LAST_UPDATE = now
         }
     }

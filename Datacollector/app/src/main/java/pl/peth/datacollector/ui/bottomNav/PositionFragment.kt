@@ -8,14 +8,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import okhttp3.Response
+import org.json.JSONObject
+import org.koin.core.component.getScopeId
 import pl.peth.datacollector.R
+import pl.peth.datacollector.api.APIHandler
 import pl.peth.datacollector.databinding.PositionFragmentBinding
 import pl.peth.datacollector.position.PositionManager
 import pl.peth.datacollector.ui.MainActivity
 
 class PositionFragment : Fragment(){
     private var positionManager: PositionManager? = null;
-    private var binding: PositionFragmentBinding? = null
+    private var binding: PositionFragmentBinding? = null;
+    private val API_DELAY: Int = 5; //Send every 5 seconds an update to endpoint
+    private var API_LAST_UPDATE: Long = System.currentTimeMillis();
+    private val apiHandler: APIHandler = MainActivity.apiHandler;
+    private var routeId: Int? = null;
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -29,7 +39,26 @@ class PositionFragment : Fragment(){
             }
 
         setupDropDowns()
+        setupButtons()
         return binding?.root;
+    }
+
+    private fun createNewRoute() {
+        GlobalScope.launch {
+            val res = apiHandler.postData("position/register/route", null)
+
+            var json = JSONObject(res?.body?.string()) // toString() is not the response body, it is a debug representation of the response body
+            routeId = json.getString("routeId").toInt()
+        }
+    }
+
+    private fun setupButtons(){
+        val btnSnap = binding?.btnSnap;
+        val btnNewRoute = binding?.btnNewRoute;
+
+        btnNewRoute?.setOnClickListener {
+            createNewRoute();
+        }
     }
 
     private fun setupDropDowns(){
@@ -67,7 +96,10 @@ class PositionFragment : Fragment(){
                 0: Location Manager
                 1: FusedLocationProvider
             */
-            positionManager?.update(posModeId, id)
+            if(routeId != null){
+                positionManager?.update(posModeId, id, routeId!!)
+
+            }
         }
     }
 }
