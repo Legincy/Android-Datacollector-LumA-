@@ -45,10 +45,10 @@ class PositionFragment : Fragment(){
 
     private fun createNewRoute() {
         GlobalScope.launch {
-            val res = apiHandler.postData("position/register/route", null)
+            var res = apiHandler.postData("route/get", null)
 
-            var json = JSONObject(res?.body?.string()) // toString() is not the response body, it is a debug representation of the response body
-            routeId = json.getString("routeId").toInt()
+            var json = JSONObject(res?.body?.string())
+            routeId = json.getString("routeid").toInt()
         }
     }
 
@@ -58,6 +58,10 @@ class PositionFragment : Fragment(){
 
         btnNewRoute?.setOnClickListener {
             createNewRoute();
+        }
+
+        btnSnap?.setOnClickListener {
+            positionManager?.setMarked();
         }
     }
 
@@ -97,8 +101,7 @@ class PositionFragment : Fragment(){
                 1: FusedLocationProvider
             */
             if(routeId != null){
-                positionManager?.update(posModeId, id, routeId!!)
-
+                positionManager?.update(posModeId, id, routeId!!);
             }
         }
     }

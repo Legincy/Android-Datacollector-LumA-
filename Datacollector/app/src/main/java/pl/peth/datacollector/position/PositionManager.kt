@@ -22,6 +22,8 @@ import pl.peth.datacollector.ui.bottomNav.PositionFragment
 class PositionManager {
     private val apiHandler: APIHandler = MainActivity.apiHandler;
     private var routeId: Int? = null;
+    private var typeId: Int? = null;
+    private var marked: Int = 0;
 
     constructor()
 
@@ -29,7 +31,7 @@ class PositionManager {
     fun setUp(){
         locationListener = object: LocationListener {
             override fun onLocationChanged(location: Location) {
-                Log.e("Position", String.format("Lat: %s \t Long: %s", location.latitude, location.longitude))
+                sendData(location.longitude, location.latitude)
             }
         }
 
@@ -46,27 +48,36 @@ class PositionManager {
         }
     }
 
+    private fun sendData(longitude: Double, latitude: Double){
+        val data: HashMap<String, String> = hashMapOf(
+            "longitude" to "${longitude}",
+            "latitude" to "${latitude}",
+            "type" to "${typeId}",
+            "route" to "${routeId}",
+            "marked" to "${marked}"
+        );
+        marked = 0;
+
+        println(data);
+
+        GlobalScope.launch {
+            val res = apiHandler.postData("position/add", data)
+            println(res?.body?.string());
+        }
+    }
+
+    fun setMarked(){
+        this.marked = 1;
+    }
+
     private fun initFusedLocationClient() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(mainContext);
 
         locationCallback = object : LocationCallback(){
             override fun onLocationResult(locationRes: LocationResult) {
-                println("onLocationResult")
                 super.onLocationResult(locationRes)
                 val loc = locationRes.lastLocation
-                println("locationCallback: " + loc.latitude + ", " + loc.longitude)
-                val data: HashMap<String, String> = hashMapOf(
-                    "longitude" to loc.longitude.toString(),
-                    "latitude" to loc.longitude.toString(),
-                    "type" to "1",
-                    "route" to "${routeId}"
-                );
-
-                println(routeId);
-                GlobalScope.launch {
-                    val res = apiHandler.postData("position/add/position", data)
-                    println(res?.body?.string());
-                }
+                sendData(loc.longitude, loc.latitude)
             }
         }
     }
@@ -91,12 +102,15 @@ class PositionManager {
         when(posTech){
             // 0: LocationManager 1: FusedLocationProv
             0L -> {
+                stopLocationManager()
                 when(posMode){
                     //0: Network Provider 1: GPS Provider 2: Stop
                     0L -> {
+                        this.typeId = 1;
                         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0L,0f, locationListener!!)
                     }
                     1L -> {
+                        this.typeId = 2;
                         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0L,0f, locationListener!!)
                     }
                     2L -> {
@@ -110,18 +124,22 @@ class PositionManager {
                 when(posMode){
                     //0: Balanced Power Accuracy 1: High Accuracy 2: Low Power 3: No Power 4: Stop
                     0L -> {
+                        this.typeId = 3;
                         locationRequest = LocationRequest().setFastestInterval(7000).setInterval(5000).setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
                         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
                     }
                     1L -> {
+                        this.typeId = 4;
                         locationRequest = LocationRequest().setFastestInterval(7000).setInterval(5000).setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
                     }
                     2L -> {
+                        this.typeId = 5;
                         locationRequest = LocationRequest().setFastestInterval(7000).setInterval(5000).setPriority(LocationRequest.PRIORITY_LOW_POWER)
                         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
                     }
                     3L -> {
+                        this.typeId = 6;
                         locationRequest = LocationRequest().setFastestInterval(7000).setInterval(5000).setPriority(LocationRequest.PRIORITY_NO_POWER)
                         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
                     }

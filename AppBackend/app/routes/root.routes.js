@@ -10,7 +10,8 @@ module.exports = app => {
     app.post("/proximity", proximity.create);
     app.post("/accelerometer", accelerometer.create);
     app.post("/gyroscope", gyroscope.create);
-    app.post("/position", position.create);
     app.get("/device/:deviceId", device.findOne);
     app.post("/device", device.create);
+    app.post("/route/get", position.getRoute);
+    app.post("/position/add", position.addPosition);
 }

@@ -3,20 +3,33 @@ const sql = require('./db');
 const Position = function (data) {
     this.longitude = data.longitude;
     this.latitude = data.latitude;
-    this.device_id = data.deviceid;
+    this.deviceid = data.deviceid;
     this.type = data.type;
+    this.marked = data.marked;
 };
 
-Position.create = (newData, result) => {
-    sql.query("INSERT INTO position SET ?", newData, (err, res) => {
+Position.addPosition = (data, result) => {
+    sql.query(`INSERT INTO \`position\`(\`routen_id\`, \`longitude\`, \`latitude\`, \`type_id\`, \`marked\`) 
+    VALUES ('${data.routeid}','${data.longitude}','${data.latitude}','${data.type}','${data.marked}');`, (err, res) => {
         if (err) {
             console.log("[ERROR]: ", err);
             result(err, null);
             return;
         }
 
-        console.log("created data: ", { id: res.insertId, ...newData });
-        result(null, { id: res.insertId, ...newData });
+        result(null, { msg: "OK", code: 200 });
+    })
+};
+
+Position.getRoute = (data, result) => {
+    sql.query(`INSERT INTO \`route\`(\`device_id\`) VALUES ('${data.deviceid}');`, (err, res) => {
+        if (err) {
+            console.log("[ERROR]: ", err);
+            result(err, null);
+            return;
+        }
+
+        result(null, { msg: "OK", code: 200, routeid: res.insertId });
     })
 };
 

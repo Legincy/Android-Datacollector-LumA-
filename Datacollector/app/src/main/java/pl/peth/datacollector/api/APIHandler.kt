@@ -17,7 +17,7 @@ class APIHandler {
 
     private lateinit var context: Context
     public lateinit var uniqueID: String
-    public var connection: Boolean = false
+    public var connection: Boolean = true
     private var lastUpdate: Long = System.currentTimeMillis()
 
     constructor(context: Context) {
@@ -29,10 +29,9 @@ class APIHandler {
 
     fun prepareAPI() {
         uniqueID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID)
-        val data: HashMap<String, String> = hashMapOf("deviceid" to uniqueID)
 
         GlobalScope.launch {
-            postData("device", data)
+            postData("device", null)
             connection = true
         }
     }
@@ -55,18 +54,21 @@ class APIHandler {
                 .addHeader("Content-Type", "application/x-www-form-urlencoded")
                 .build()
 
+            println("Requesting: " + connection);
             try {
                 result = client.newCall(request).await()
-                println(result);
             } catch (e: SocketTimeoutException) {
+                Log.e("API", e.toString());
                 connection = false
             }
         } else {
             val now: Long = System.currentTimeMillis()
-            if (now - lastUpdate > 5000) {
+            while(connection != true){
+                if (now - lastUpdate > 5000) {
 
-                prepareAPI()
-                lastUpdate = now
+                    prepareAPI()
+                    lastUpdate = now
+                }
             }
         }
         return result
