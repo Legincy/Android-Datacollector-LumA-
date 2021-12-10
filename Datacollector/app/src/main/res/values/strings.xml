@@ -3,7 +3,7 @@
     <string name="tab_text_sensor">Sensor</string>
     <string name="tab_text_position">Position</string>
     <string name="tab_text_3">Tab 3</string>
-    
+
     <string-array name="dropDownAccuracyItems">
         <item>Fast</item>
         <item>Normal</item>
@@ -36,5 +36,6 @@
         <item>No Power</item>
         <item>Stop</item>
     </string-array>
+    <string name="title_activity_maps">MapsActivity</string>
 
 </resources>

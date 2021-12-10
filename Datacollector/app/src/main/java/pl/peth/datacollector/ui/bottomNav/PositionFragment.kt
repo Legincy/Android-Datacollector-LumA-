@@ -1,6 +1,6 @@
 package pl.peth.datacollector.ui.bottomNav
 
-import android.location.LocationManager
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,28 +8,40 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CircleOptions
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import okhttp3.Response
 import org.json.JSONObject
-import org.koin.core.component.getScopeId
 import pl.peth.datacollector.R
 import pl.peth.datacollector.api.APIHandler
 import pl.peth.datacollector.databinding.PositionFragmentBinding
 import pl.peth.datacollector.position.PositionManager
 import pl.peth.datacollector.ui.MainActivity
+import kotlin.concurrent.timer
+import kotlin.math.log
 
-class PositionFragment : Fragment(){
-    private var positionManager: PositionManager? = null;
-    private var binding: PositionFragmentBinding? = null;
-    private val API_DELAY: Int = 5; //Send every 5 seconds an update to endpoint
-    private var API_LAST_UPDATE: Long = System.currentTimeMillis();
-    private val apiHandler: APIHandler = MainActivity.apiHandler;
-    private var routeId: Int? = null;
+class PositionFragment : Fragment(), OnMapReadyCallback {
+    private var positionManager: PositionManager? = null
+    private var binding: PositionFragmentBinding? = null
+    private val API_DELAY: Int = 5; // Send every 5 seconds an update to endpoint
+    private var API_LAST_UPDATE: Long = System.currentTimeMillis()
+    private val apiHandler: APIHandler = MainActivity.apiHandler
+    private var routeId: Int? = null
+    private lateinit var mMap: GoogleMap
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View? {
         // Inflate the layout for this fragment
-        positionManager = MainActivity.positionManager;
+        positionManager = MainActivity.positionManager
         positionManager!!.setUp()
 
         binding = PositionFragmentBinding.inflate(layoutInflater)
@@ -40,7 +52,28 @@ class PositionFragment : Fragment(){
 
         setupDropDowns()
         setupButtons()
-        return binding?.root;
+        return binding?.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        val callback = OnMapReadyCallback { googleMap ->
+            val firstPoint = LatLng(51.42779, 6.88152)
+            googleMap.addMarker(MarkerOptions().position(firstPoint).title(""))
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(firstPoint))
+            googleMap.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(
+                        firstPoint.latitude,
+                        firstPoint.longitude
+                    ),
+                    19f
+                )
+            )
+            onMapReady(googleMap)
+        }
+        mapFragment?.getMapAsync(callback)
     }
 
     private fun createNewRoute() {
@@ -52,22 +85,23 @@ class PositionFragment : Fragment(){
         }
     }
 
-    private fun setupButtons(){
-        val btnSnap = binding?.btnSnap;
-        val btnNewRoute = binding?.btnNewRoute;
+    private fun setupButtons() {
+        val btnSnap = binding?.btnSnap
+        val btnNewRoute = binding?.btnNewRoute
 
         btnNewRoute?.setOnClickListener {
-            createNewRoute();
+            createNewRoute()
         }
 
         btnSnap?.setOnClickListener {
-            positionManager?.setMarked();
+            positionManager?.setMarked()
         }
     }
 
-    private fun setupDropDowns(){
+    private fun setupDropDowns() {
         val positionTechArray = resources.getStringArray(R.array.dropDownPositionTechnologies)
-        val positionTechAdapter = ArrayAdapter(requireContext(), R.layout.drop_down_item, positionTechArray)
+        val positionTechAdapter =
+            ArrayAdapter(requireContext(), R.layout.drop_down_item, positionTechArray)
 
         binding?.positionTechDropDownText?.setAdapter(positionTechAdapter)
 
@@ -76,20 +110,22 @@ class PositionFragment : Fragment(){
         }
     }
 
-    private fun updateModeDropDown(posModeId: Long){
-        //0=Location Manager || 1=Fused Location Provider
-        var positionModeTechArray: Array<out String>? = null;
-        var positionModeAdapter: ArrayAdapter<String>? = null;
-        var lmMode: String? = null;
+    private fun updateModeDropDown(posModeId: Long) {
+        // 0=Location Manager || 1=Fused Location Provider
+        var positionModeTechArray: Array<out String>? = null
+        var positionModeAdapter: ArrayAdapter<String>? = null
+        var lmMode: String? = null
 
-        when(posModeId){
+        when (posModeId) {
             0L -> {
                 positionModeTechArray = resources.getStringArray(R.array.dropDownPositionModeLM)
-                positionModeAdapter = ArrayAdapter(requireContext(), R.layout.drop_down_item, positionModeTechArray)
+                positionModeAdapter =
+                    ArrayAdapter(requireContext(), R.layout.drop_down_item, positionModeTechArray)
             }
             1L -> {
                 positionModeTechArray = resources.getStringArray(R.array.dropDownPositionModeFLP)
-                positionModeAdapter = ArrayAdapter(requireContext(), R.layout.drop_down_item, positionModeTechArray)
+                positionModeAdapter =
+                    ArrayAdapter(requireContext(), R.layout.drop_down_item, positionModeTechArray)
             }
         }
 
@@ -100,9 +136,40 @@ class PositionFragment : Fragment(){
                 0: Location Manager
                 1: FusedLocationProvider
             */
-            if(routeId != null){
-                positionManager?.update(posModeId, id, routeId!!);
+            if (routeId != null) {
+                positionManager?.update(posModeId, id, routeId!!)
             }
         }
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+
+        for (location in route) {
+            mMap.addCircle(
+                CircleOptions().center(
+                    LatLng(
+                        location.latitude,
+                        location.longitude
+                    )
+                )
+                    .radius(1.0)
+                    .strokeColor(Color.GRAY)
+                    .fillColor(Color.GRAY)
+            )
+        }
+    }
+
+    companion object {
+        private val route = arrayOf(
+            LatLng(51.42779, 6.88152),
+            LatLng(51.42844, 6.88298),
+            LatLng(51.42894, 6.88485),
+            LatLng(51.42953, 6.88671),
+            LatLng(51.43044, 6.88661),
+            LatLng(51.43176, 6.88676),
+            LatLng(51.43183, 6.8886),
+            LatLng(51.43321, 6.88873)
+        )
     }
 }
