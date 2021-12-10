@@ -59,4 +59,5 @@ jacoco.exec
 # branchdiff.sh #
 # #################
 diff
+local.properties
 
