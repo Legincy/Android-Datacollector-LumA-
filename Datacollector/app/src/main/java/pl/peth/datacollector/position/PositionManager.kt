@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.OnSuccessListener
@@ -17,7 +18,9 @@ import pl.peth.datacollector.ui.MainActivity
 
 class PositionManager {
     private val apiHandler: APIHandler = MainActivity.apiHandler
-    private var routeId: Int? = null
+    var routeId: Int? = null
+    var longitude: Double? = null
+    var latitude: Double? = null
     private var typeId: Int? = null
     private var marked: Int = 0
 
@@ -30,7 +33,6 @@ class PositionManager {
                 sendData(location.longitude, location.latitude)
             }
         }
-
         initFusedLocationClient()
 
         if (permissionCheck()) {
@@ -45,6 +47,7 @@ class PositionManager {
     }
 
     private fun sendData(longitude: Double, latitude: Double) {
+        Log.e("longitude", "$longitude")
         val data: HashMap<String, String> = hashMapOf(
             "longitude" to "$longitude",
             "latitude" to "$latitude",
@@ -52,6 +55,8 @@ class PositionManager {
             "route" to "$routeId",
             "marked" to "$marked"
         )
+        this.longitude = longitude
+        this.latitude = latitude
         marked = 0
 
         println(data)

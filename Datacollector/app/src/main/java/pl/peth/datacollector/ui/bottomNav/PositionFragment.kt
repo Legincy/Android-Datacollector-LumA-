@@ -1,11 +1,13 @@
 package pl.peth.datacollector.ui.bottomNav
 
 import android.graphics.Color
+import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -14,6 +16,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -30,6 +33,10 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
     private var API_LAST_UPDATE: Long = System.currentTimeMillis()
     private val apiHandler: APIHandler = MainActivity.apiHandler
     private var routeId: Int? = null
+    private var longitude: Double? = null
+    private var latitude: Double? = null
+    private var lastLocation = Location("dummyProvider")
+    private var firstPoint = true
     private lateinit var mMap: GoogleMap
 
     override fun onCreateView(
@@ -46,7 +53,6 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
                 lifecycleOwner = this@PositionFragment
                 viewModel = SensorFragmentViewModel()
             }
-
         setupDropDowns()
         setupButtons()
         return binding?.root
@@ -88,10 +94,14 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
 
         btnNewRoute?.setOnClickListener {
             createNewRoute()
+            Toast.makeText(activity, "$routeId", Toast.LENGTH_SHORT).show()
         }
 
         btnSnap?.setOnClickListener {
             positionManager?.setMarked()
+            longitude = positionManager?.longitude ?: 0.0
+            latitude = positionManager?.latitude ?: 0.0
+            addRedCircle()
         }
     }
 
@@ -167,6 +177,53 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
             LatLng(51.43176, 6.88676),
             LatLng(51.43183, 6.8886),
             LatLng(51.43321, 6.88873)
+        )
+    }
+
+    fun addRedCircle() {
+
+        if (latitude != lastLocation.latitude) {
+
+            mMap.addCircle(
+                CircleOptions().center(
+                    LatLng(
+                        latitude ?: 0.0,
+                        longitude ?: 0.0
+                    )
+                )
+                    .radius(1.0)
+                    .strokeColor(Color.RED)
+                    .fillColor(Color.RED)
+            )
+            if (!firstPoint) {
+                mMap.addPolyline(
+                    PolylineOptions().add(
+                        LatLng(
+                            lastLocation.latitude,
+                            lastLocation.longitude
+                        )
+                    ).add(
+                        LatLng(
+                            latitude ?: 0.0,
+                            longitude ?: 0.0
+                        )
+                    )
+                        .color(Color.RED)
+                )
+            }
+        }
+
+        firstPoint = false
+        lastLocation.latitude = latitude ?: 0.0
+        lastLocation.longitude = longitude ?: 0.0
+
+        mMap.moveCamera(
+            CameraUpdateFactory.newLatLng(
+                LatLng(
+                    latitude ?: 0.0,
+                    longitude ?: 0.0
+                )
+            )
         )
     }
 }
