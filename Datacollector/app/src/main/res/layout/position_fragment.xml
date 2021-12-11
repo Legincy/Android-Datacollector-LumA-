@@ -21,8 +21,8 @@
         <fragment
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="380dp"
             android:layout_margin="10dp"
             app:layout_constraintBottom_toTopOf="@id/positionTechDropDown"
             app:layout_constraintEnd_toEndOf="parent"
@@ -36,15 +36,19 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="260dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="450dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="96dp"
             android:hint="Position Technology"
             android:theme="@style/dropDownMenuStyle"
             app:boxStrokeColor="@color/themeColor"
             app:endIconTint="@color/black"
-            app:hintTextColor="@color/themeColor"
+            app:hintTextAppearance="@color/black"
+            app:hintTextColor="@color/black"
+            app:layout_constraintBottom_toTopOf="@id/positionModeDropDown"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/map">
 
             <AutoCompleteTextView
                 android:id="@+id/positionTechDropDownText"
@@ -65,14 +69,16 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="260dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:hint="Mode"
             android:theme="@style/dropDownMenuStyle"
             app:boxStrokeColor="@color/themeColor"
             app:endIconTint="@color/black"
-            app:hintTextColor="@color/themeColor"
-            app:layout_constraintStart_toStartOf="parent"
+            app:hintTextColor="@color/black"
+            app:hintTextAppearance="@color/black"
+            app:layout_constraintBottom_toTopOf="@id/btnSnap"
+            app:layout_constraintEnd_toEndOf="@id/positionTechDropDown"
+            app:layout_constraintStart_toStartOf="@id/positionTechDropDown"
             app:layout_constraintTop_toBottomOf="@+id/positionTechDropDown">
 
             <AutoCompleteTextView
@@ -90,27 +96,25 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/btnNewRoute"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="24dp"
-            android:text="New Route"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/btnSnap"
-            app:layout_constraintTop_toBottomOf="@+id/positionModeDropDown" />
-
-        <Button
             android:id="@+id/btnSnap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="12dp"
             android:text="Snap Position"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.061"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnSnap"
+            app:layout_constraintStart_toStartOf="@id/positionModeDropDown"
             app:layout_constraintTop_toBottomOf="@+id/positionModeDropDown" />
+
+        <Button
+            android:id="@+id/btnNewRoute"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="12dp"
+            android:text="New Route"
+            app:layout_constraintEnd_toEndOf="@id/positionModeDropDown"
+            app:layout_constraintStart_toEndOf="@id/btnSnap"
+            app:layout_constraintTop_toBottomOf="@id/positionModeDropDown" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

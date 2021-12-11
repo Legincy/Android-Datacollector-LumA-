@@ -2,7 +2,6 @@ package pl.peth.datacollector.ui.bottomNav
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,8 +22,6 @@ import pl.peth.datacollector.api.APIHandler
 import pl.peth.datacollector.databinding.PositionFragmentBinding
 import pl.peth.datacollector.position.PositionManager
 import pl.peth.datacollector.ui.MainActivity
-import kotlin.concurrent.timer
-import kotlin.math.log
 
 class PositionFragment : Fragment(), OnMapReadyCallback {
     private var positionManager: PositionManager? = null
