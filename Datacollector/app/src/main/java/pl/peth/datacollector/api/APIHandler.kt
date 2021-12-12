@@ -37,6 +37,7 @@ class APIHandler {
             }else{
                 connection = true
             }
+            res?.close();
         }
     }
 
@@ -66,7 +67,6 @@ class APIHandler {
                 connection = false
             }
         } else {
-            println("lol");
             val now: Long = System.currentTimeMillis()
             if (now - lastUpdate > 5000) {
 

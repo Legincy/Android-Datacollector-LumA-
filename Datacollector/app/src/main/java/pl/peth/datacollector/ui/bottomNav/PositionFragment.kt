@@ -85,8 +85,11 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
 
             if (res != null) {
                 var json = JSONObject(res?.body?.string())
+                println(json);
                 routeId = json.getString("routeid").toInt()
+                positionManager?.update(null, null, routeId!!);
             }
+            res?.close();
         }
     }
 

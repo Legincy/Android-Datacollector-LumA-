@@ -57,13 +57,14 @@ class PositionManager {
         )
         this.longitude = longitude
         this.latitude = latitude
-        marked = 0
 
-        println(data)
-
-        GlobalScope.launch {
-            val res = apiHandler.postData("position/add", data)
-            println(res?.body?.string())
+        if(marked == 1){
+            marked = 0
+            GlobalScope.launch {
+                val res = apiHandler.postData("position/add", data)
+                println(res?.body?.string())
+                res?.close();
+            }
         }
     }
 
@@ -101,91 +102,95 @@ class PositionManager {
     }
 
     @SuppressLint("MissingPermission")
-    fun update(posTech: Long, posMode: Long, routeId: Int) {
-        this.routeId = routeId
-        stopLocationManager()
-        fusedLocationClient.removeLocationUpdates(locationCallback)
+    fun update(posTech: Long?, posMode: Long?, routeId: Int) {
+        if((posTech == null) && (posMode == null)){
+            this.routeId = routeId;
+        }else {
+            this.routeId = routeId
+            stopLocationManager()
+            fusedLocationClient.removeLocationUpdates(locationCallback)
 
-        when (posTech) {
-            // 0: LocationManager 1: FusedLocationProv
-            0L -> {
-                stopLocationManager()
-                when (posMode) {
-                    // 0: Network Provider 1: GPS Provider 2: Stop
-                    0L -> {
-                        this.typeId = 1
-                        locationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
-                            0L,
-                            0f,
-                            locationListener!!
-                        )
-                    }
-                    1L -> {
-                        this.typeId = 2
-                        locationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER,
-                            0L,
-                            0f,
-                            locationListener!!
-                        )
-                    }
-                    2L -> {
-                        stopLocationManager()
+            when (posTech) {
+                // 0: LocationManager 1: FusedLocationProv
+                0L -> {
+                    stopLocationManager()
+                    when (posMode) {
+                        // 0: Network Provider 1: GPS Provider 2: Stop
+                        0L -> {
+                            this.typeId = 1
+                            locationManager.requestLocationUpdates(
+                                LocationManager.NETWORK_PROVIDER,
+                                0L,
+                                0f,
+                                locationListener!!
+                            )
+                        }
+                        1L -> {
+                            this.typeId = 2
+                            locationManager.requestLocationUpdates(
+                                LocationManager.GPS_PROVIDER,
+                                0L,
+                                0f,
+                                locationListener!!
+                            )
+                        }
+                        2L -> {
+                            stopLocationManager()
+                        }
                     }
                 }
-            }
-            1L -> {
-                var locationRequest: LocationRequest? = null
+                1L -> {
+                    var locationRequest: LocationRequest? = null
 
-                when (posMode) {
-                    // 0: Balanced Power Accuracy 1: High Accuracy 2: Low Power 3: No Power 4: Stop
-                    0L -> {
-                        this.typeId = 3
-                        locationRequest =
-                            LocationRequest().setFastestInterval(7000).setInterval(5000)
-                                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
-                        fusedLocationClient.requestLocationUpdates(
-                            locationRequest,
-                            locationCallback,
-                            null
-                        )
-                    }
-                    1L -> {
-                        this.typeId = 4
-                        locationRequest =
-                            LocationRequest().setFastestInterval(7000).setInterval(5000)
-                                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                        fusedLocationClient.requestLocationUpdates(
-                            locationRequest,
-                            locationCallback,
-                            null
-                        )
-                    }
-                    2L -> {
-                        this.typeId = 5
-                        locationRequest =
-                            LocationRequest().setFastestInterval(7000).setInterval(5000)
-                                .setPriority(LocationRequest.PRIORITY_LOW_POWER)
-                        fusedLocationClient.requestLocationUpdates(
-                            locationRequest,
-                            locationCallback,
-                            null
-                        )
-                    }
-                    3L -> {
-                        this.typeId = 6
-                        locationRequest =
-                            LocationRequest().setFastestInterval(7000).setInterval(5000)
-                                .setPriority(LocationRequest.PRIORITY_NO_POWER)
-                        fusedLocationClient.requestLocationUpdates(
-                            locationRequest,
-                            locationCallback,
-                            null
-                        )
-                    }
-                    4L -> {
-                        fusedLocationClient.removeLocationUpdates(locationCallback)
+                    when (posMode) {
+                        // 0: Balanced Power Accuracy 1: High Accuracy 2: Low Power 3: No Power 4: Stop
+                        0L -> {
+                            this.typeId = 3
+                            locationRequest =
+                                LocationRequest().setFastestInterval(7000).setInterval(5000)
+                                    .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+                            fusedLocationClient.requestLocationUpdates(
+                                locationRequest,
+                                locationCallback,
+                                null
+                            )
+                        }
+                        1L -> {
+                            this.typeId = 4
+                            locationRequest =
+                                LocationRequest().setFastestInterval(7000).setInterval(5000)
+                                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                            fusedLocationClient.requestLocationUpdates(
+                                locationRequest,
+                                locationCallback,
+                                null
+                            )
+                        }
+                        2L -> {
+                            this.typeId = 5
+                            locationRequest =
+                                LocationRequest().setFastestInterval(7000).setInterval(5000)
+                                    .setPriority(LocationRequest.PRIORITY_LOW_POWER)
+                            fusedLocationClient.requestLocationUpdates(
+                                locationRequest,
+                                locationCallback,
+                                null
+                            )
+                        }
+                        3L -> {
+                            this.typeId = 6
+                            locationRequest =
+                                LocationRequest().setFastestInterval(7000).setInterval(5000)
+                                    .setPriority(LocationRequest.PRIORITY_NO_POWER)
+                            fusedLocationClient.requestLocationUpdates(
+                                locationRequest,
+                                locationCallback,
+                                null
+                            )
+                        }
+                        4L -> {
+                            fusedLocationClient.removeLocationUpdates(locationCallback)
+                        }
                     }
                 }
             }
