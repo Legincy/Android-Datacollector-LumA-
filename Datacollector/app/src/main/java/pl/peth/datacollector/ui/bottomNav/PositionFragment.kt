@@ -83,7 +83,7 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
         GlobalScope.launch {
             var res = apiHandler.postData("route/get", null)
 
-            if(res != null){
+            if (res != null) {
                 var json = JSONObject(res?.body?.string())
                 routeId = json.getString("routeid").toInt()
             }
@@ -96,6 +96,7 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
 
         btnNewRoute?.setOnClickListener {
             createNewRoute()
+            binding?.routId?.text = routeId.toString()
             Toast.makeText(activity, "$routeId", Toast.LENGTH_SHORT).show()
         }
 
@@ -103,6 +104,7 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
             positionManager?.setMarked()
             longitude = positionManager?.longitude ?: 0.0
             latitude = positionManager?.latitude ?: 0.0
+            Toast.makeText(activity, "$latitude  $longitude", Toast.LENGTH_SHORT).show()
             addRedCircle()
         }
     }
