@@ -196,7 +196,6 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
     fun addRedCircle() {
 
         if (latitude != lastLocation.latitude) {
-
             mMap.addCircle(
                 CircleOptions().center(
                     LatLng(
