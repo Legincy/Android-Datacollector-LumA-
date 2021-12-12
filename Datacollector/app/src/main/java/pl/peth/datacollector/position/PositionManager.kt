@@ -57,13 +57,14 @@ class PositionManager {
         )
         this.longitude = longitude
         this.latitude = latitude
-        marked = 0
 
-        println(data)
-
-        GlobalScope.launch {
-            val res = apiHandler.postData("position/add", data)
-            println(res?.body?.string())
+        if(marked == 1){
+            marked = 0
+            GlobalScope.launch {
+                val res = apiHandler.postData("position/add", data)
+                println(res?.body?.string())
+                res?.close();
+            }
         }
     }
 

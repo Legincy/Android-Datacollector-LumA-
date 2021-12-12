@@ -11,7 +11,7 @@ exports.addPosition = (req, res) => {
         deviceid: req.body.deviceid,
         longitude: req.body.longitude,
         latitude: req.body.latitude,
-        deviceid: req.body.deviceid,
+        route: req.body.route,
         type: req.body.type,
         marked: req.body.marked
     });
