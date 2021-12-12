@@ -38,6 +38,7 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
     private var lastLocation = Location("dummyProvider")
     private var firstPoint = true
     private lateinit var mMap: GoogleMap
+    private lateinit var mapFragment: SupportMapFragment
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,7 +61,11 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapFragment = (childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?)!!
+        setUpCallBack()
+    }
+
+    private fun setUpCallBack() {
         val callback = OnMapReadyCallback { googleMap ->
             val firstPoint = LatLng(51.42779, 6.88152)
             googleMap.addMarker(MarkerOptions().position(firstPoint).title(""))
@@ -85,11 +90,11 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
 
             if (res != null) {
                 var json = JSONObject(res?.body?.string())
-                println(json);
+                println(json)
                 routeId = json.getString("routeid").toInt()
-                positionManager?.update(null, null, routeId!!);
+                positionManager?.update(null, null, routeId!!)
             }
-            res?.close();
+            res?.close()
         }
     }
 
@@ -101,6 +106,7 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
             createNewRoute()
             binding?.routId?.text = routeId.toString()
             Toast.makeText(activity, "$routeId", Toast.LENGTH_SHORT).show()
+            setUpCallBack()
         }
 
         btnSnap?.setOnClickListener {
