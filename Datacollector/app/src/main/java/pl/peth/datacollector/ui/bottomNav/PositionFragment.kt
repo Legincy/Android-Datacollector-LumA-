@@ -83,8 +83,10 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
         GlobalScope.launch {
             var res = apiHandler.postData("route/get", null)
 
-            var json = JSONObject(res?.body?.string())
-            routeId = json.getString("routeid").toInt()
+            if(res != null){
+                var json = JSONObject(res?.body?.string())
+                routeId = json.getString("routeid").toInt()
+            }
         }
     }
 

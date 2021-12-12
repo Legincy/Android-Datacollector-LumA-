@@ -21,8 +21,8 @@ class APIHandler {
     private var lastUpdate: Long = System.currentTimeMillis()
 
     constructor(context: Context) {
-        API_PORT = "3000"
-        API_ADDRESS = "http://192.168.0.158:%s".format(API_PORT)
+        API_PORT = "30000"
+        API_ADDRESS = "http://local.peth.pl:%s".format(API_PORT)
         this.context = context
         prepareAPI()
     }
@@ -31,8 +31,12 @@ class APIHandler {
         uniqueID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID)
 
         GlobalScope.launch {
-            postData("device", null)
-            connection = true
+            val res = postData("device", null);
+            if(res == null) {
+                connection = false
+            }else{
+                connection = true
+            }
         }
     }
 
@@ -62,13 +66,12 @@ class APIHandler {
                 connection = false
             }
         } else {
+            println("lol");
             val now: Long = System.currentTimeMillis()
-            while(connection != true){
-                if (now - lastUpdate > 5000) {
+            if (now - lastUpdate > 5000) {
 
-                    prepareAPI()
-                    lastUpdate = now
-                }
+                prepareAPI()
+                lastUpdate = now
             }
         }
         return result
