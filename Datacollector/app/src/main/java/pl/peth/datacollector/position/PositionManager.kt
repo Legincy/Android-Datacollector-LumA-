@@ -58,7 +58,7 @@ class PositionManager {
         this.longitude = longitude
         this.latitude = latitude
 
-        if(marked == 1){
+        if((marked == 1) && (routeId != null)){
             marked = 0
             GlobalScope.launch {
                 val res = apiHandler.postData("position/add", data)
@@ -102,18 +102,16 @@ class PositionManager {
     }
 
     @SuppressLint("MissingPermission")
-    fun update(posTech: Long?, posMode: Long?, routeId: Int) {
+    fun update(posTech: Long?, posMode: Long?, routeId: Int?) {
         if((posTech == null) && (posMode == null)){
             this.routeId = routeId;
         }else {
-            this.routeId = routeId
             stopLocationManager()
             fusedLocationClient.removeLocationUpdates(locationCallback)
 
             when (posTech) {
                 // 0: LocationManager 1: FusedLocationProv
                 0L -> {
-                    stopLocationManager()
                     when (posMode) {
                         // 0: Network Provider 1: GPS Provider 2: Stop
                         0L -> {
@@ -147,7 +145,7 @@ class PositionManager {
                         0L -> {
                             this.typeId = 3
                             locationRequest =
-                                LocationRequest().setFastestInterval(7000).setInterval(5000)
+                                LocationRequest().setFastestInterval(1000).setInterval(2000)
                                     .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
                             fusedLocationClient.requestLocationUpdates(
                                 locationRequest,
@@ -158,7 +156,7 @@ class PositionManager {
                         1L -> {
                             this.typeId = 4
                             locationRequest =
-                                LocationRequest().setFastestInterval(7000).setInterval(5000)
+                                LocationRequest().setFastestInterval(1000).setInterval(2000)
                                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                             fusedLocationClient.requestLocationUpdates(
                                 locationRequest,
@@ -169,7 +167,7 @@ class PositionManager {
                         2L -> {
                             this.typeId = 5
                             locationRequest =
-                                LocationRequest().setFastestInterval(7000).setInterval(5000)
+                                LocationRequest().setFastestInterval(1000).setInterval(2000)
                                     .setPriority(LocationRequest.PRIORITY_LOW_POWER)
                             fusedLocationClient.requestLocationUpdates(
                                 locationRequest,
@@ -180,7 +178,7 @@ class PositionManager {
                         3L -> {
                             this.typeId = 6
                             locationRequest =
-                                LocationRequest().setFastestInterval(7000).setInterval(5000)
+                                LocationRequest().setFastestInterval(1000).setInterval(2000)
                                     .setPriority(LocationRequest.PRIORITY_NO_POWER)
                             fusedLocationClient.requestLocationUpdates(
                                 locationRequest,
