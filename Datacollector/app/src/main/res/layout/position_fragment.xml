@@ -64,6 +64,15 @@
                 android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <TextView
+            android:id="@+id/routId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/btnNewRoute"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btnNewRoute"
+            app:layout_constraintTop_toTopOf="@id/btnNewRoute" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/positionModeDropDown"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -74,8 +83,8 @@
             android:theme="@style/dropDownMenuStyle"
             app:boxStrokeColor="@color/themeColor"
             app:endIconTint="@color/black"
-            app:hintTextColor="@color/black"
             app:hintTextAppearance="@color/black"
+            app:hintTextColor="@color/black"
             app:layout_constraintBottom_toTopOf="@id/btnSnap"
             app:layout_constraintEnd_toEndOf="@id/positionTechDropDown"
             app:layout_constraintStart_toStartOf="@id/positionTechDropDown"
