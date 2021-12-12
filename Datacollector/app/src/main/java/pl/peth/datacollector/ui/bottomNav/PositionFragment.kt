@@ -156,9 +156,7 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
                 0: Location Manager
                 1: FusedLocationProvider
             */
-            if (routeId != null) {
-                positionManager?.update(posModeId, id, routeId!!)
-            }
+            positionManager?.update(posModeId, id, null);
         }
     }
 

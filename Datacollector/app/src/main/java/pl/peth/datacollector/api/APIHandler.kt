@@ -59,7 +59,6 @@ class APIHandler {
                 .addHeader("Content-Type", "application/x-www-form-urlencoded")
                 .build()
 
-            println("Requesting: " + connection);
             try {
                 result = client.newCall(request).await()
             } catch (e: SocketTimeoutException) {

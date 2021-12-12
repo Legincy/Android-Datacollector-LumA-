@@ -16,7 +16,7 @@ exports.addPosition = (req, res) => {
         marked: req.body.marked
     });
 
-    console.log("RECEIVED: " + devData);
+    console.log(`[RECEIVED] ID: ${devData.deviceid} | long: ${devData.longitude} | lat: ${devData.latitude} | route: ${devData.route} | type: ${devData.type} | marked: ${devData.marked}`);
 
     Position.addPosition(devData, (err, data) => {
         if (err)
