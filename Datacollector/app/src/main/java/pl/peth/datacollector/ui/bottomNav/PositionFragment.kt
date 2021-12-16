@@ -156,7 +156,7 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
                 0: Location Manager
                 1: FusedLocationProvider
             */
-            positionManager?.update(posModeId, id, null);
+            positionManager?.update(posModeId, id, null)
         }
     }
 
@@ -187,14 +187,15 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
             LatLng(51.43044, 6.88661),
             LatLng(51.43176, 6.88676),
             LatLng(51.43183, 6.8886),
-            LatLng(51.43321, 6.88873)
+            LatLng(51.43321, 6.88873),
+            LatLng(51.427273, 6.880135),
+            LatLng(51.426372, 6.881506)
         )
     }
 
     fun addRedCircle() {
 
         if (latitude != lastLocation.latitude) {
-
             mMap.addCircle(
                 CircleOptions().center(
                     LatLng(
