@@ -58,7 +58,7 @@ class PositionManager {
         this.longitude = longitude
         this.latitude = latitude
 
-        if((marked == 1) && (routeId != null)){
+        if((routeId != null)){
             marked = 0
             GlobalScope.launch {
                 val res = apiHandler.postData("position/add", data)
@@ -124,6 +124,7 @@ class PositionManager {
                             )
                         }
                         1L -> {
+                            println("GPS")
                             this.typeId = 2
                             locationManager.requestLocationUpdates(
                                 LocationManager.GPS_PROVIDER,
