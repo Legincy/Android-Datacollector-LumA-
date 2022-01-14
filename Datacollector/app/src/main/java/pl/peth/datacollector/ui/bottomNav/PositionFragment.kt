@@ -6,8 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.Fragment
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -17,14 +16,15 @@ import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import okhttp3.*
 import org.json.JSONObject
 import pl.peth.datacollector.R
 import pl.peth.datacollector.api.APIHandler
 import pl.peth.datacollector.databinding.PositionFragmentBinding
 import pl.peth.datacollector.position.PositionManager
-import pl.peth.datacollector.ui.MainActivity
+import pl.peth.datacollector.ui.*
+import java.util.*
 
 class PositionFragment : Fragment(), OnMapReadyCallback {
     private var positionManager: PositionManager? = null
@@ -56,6 +56,7 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
             }
         setupDropDowns()
         setupButtons()
+
         return binding?.root
     }
 
