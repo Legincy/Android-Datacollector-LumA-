@@ -58,12 +58,12 @@ class PositionManager {
         this.longitude = longitude
         this.latitude = latitude
 
-        if((routeId != null)){
+        if ((routeId != null)) {
             marked = 0
             GlobalScope.launch {
                 val res = apiHandler.postData("position/add", data)
                 println(res?.body?.string())
-                res?.close();
+                res?.close()
             }
         }
     }
@@ -103,9 +103,9 @@ class PositionManager {
 
     @SuppressLint("MissingPermission")
     fun update(posTech: Long?, posMode: Long?, routeId: Int?) {
-        if((posTech == null) && (posMode == null)){
-            this.routeId = routeId;
-        }else {
+        if ((posTech == null) && (posMode == null)) {
+            this.routeId = routeId
+        } else {
             stopLocationManager()
             fusedLocationClient.removeLocationUpdates(locationCallback)
 

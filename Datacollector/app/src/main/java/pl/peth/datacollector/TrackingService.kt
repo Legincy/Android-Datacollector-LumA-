@@ -10,17 +10,24 @@ import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.os.Build
+import android.os.Looper
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
 import pl.peth.datacollector.Constants.ACTION_PAUSE_SERVICE
 import pl.peth.datacollector.Constants.ACTION_SHOW_POSITION_FRAGMENT
 import pl.peth.datacollector.Constants.ACTION_START_OR_RESUME_SERVICE
 import pl.peth.datacollector.Constants.ACTION_STOP_SERVICE
+import pl.peth.datacollector.Constants.FASTEST_LOCATION_UPDATE_INTERVAL
+import pl.peth.datacollector.Constants.LOCATION_UPDATE_INTERVAL
 import pl.peth.datacollector.Constants.NOTIFICATION_CHANNEL_ID
 import pl.peth.datacollector.Constants.NOTIFICATION_CHANNEL_NAME
 import pl.peth.datacollector.Constants.NOTIFICATION_ID
@@ -32,48 +39,28 @@ typealias lines = MutableList<line>
 class TrackingService : LifecycleService() {
 
     var isFirstRun = true
+    private var accuracy = PRIORITY_HIGH_ACCURACY
 
-    private fun postInitialValues() {
-        isTracking.postValue(false)
-        pathPoints.postValue(mutableListOf())
-    }
+    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
-    val locationCallback = object : LocationCallback() {
-        override fun onLocationResult(result: LocationResult) {
-            super.onLocationResult(result)
-            if (isTracking.value!!) {
-                result.locations.let { locations ->
-                    for (location in locations) {
-                        addPathPoint(location)
-                    }
-                }
+    override fun onCreate() {
+        super.onCreate()
+        postInitialValues()
+        fusedLocationProviderClient = FusedLocationProviderClient(this)
+
+        isTracking.observe(
+            this,
+            Observer {
+                updateLocationTracking(it)
             }
-        }
+        )
     }
-
-    private fun addPathPoint(location: Location?) {
-        location?.let {
-            val pos = LatLng(
-                location.latitude,
-                location.longitude
-            )
-            pathPoints.value?.apply {
-                last().add(pos)
-                pathPoints.postValue(this)
-            }
-        }
-    }
-
-    private fun addEmptyLine() = pathPoints.value?.apply {
-        add(mutableListOf())
-        pathPoints.postValue(this)
-    } ?: pathPoints.postValue(mutableListOf(mutableListOf()))
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
+            accuracy = it.getIntExtra("accuracy", PRIORITY_HIGH_ACCURACY)
             when (it.action) {
                 ACTION_START_OR_RESUME_SERVICE -> {
-
                     if (isFirstRun) {
                         startForegroundService()
                         isFirstRun = false
@@ -107,8 +94,70 @@ class TrackingService : LifecycleService() {
         return super.onStartCommand(intent, flags, startId)
     }
 
+    private fun postInitialValues() {
+        isTracking.postValue(false)
+        pathPoints.postValue(mutableListOf())
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun updateLocationTracking(isTracking: Boolean) {
+        if (isTracking) {
+            val request = LocationRequest().apply {
+                interval = LOCATION_UPDATE_INTERVAL
+                fastestInterval = FASTEST_LOCATION_UPDATE_INTERVAL
+                priority = accuracy
+            }
+            fusedLocationProviderClient.requestLocationUpdates(
+                request,
+                locationCallback,
+                Looper.getMainLooper()
+            )
+        } else {
+            fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+        }
+    }
+
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(result: LocationResult) {
+            super.onLocationResult(result)
+            if (isTracking.value!!) {
+                result.locations.let { locations ->
+                    for (location in locations) {
+                        addPathPoint(location)
+                        /**
+                         Toast.makeText(
+                         applicationContext,
+                         "NEW LOCATION: ${location.latitude}, ${location.longitude}",
+                         Toast.LENGTH_SHORT
+                         ).show()***/
+                    }
+                }
+            }
+        }
+    }
+
+    private fun addPathPoint(location: Location?) {
+        location?.let {
+            val pos = LatLng(
+                location.latitude,
+                location.longitude,
+            )
+            pathPoints.value?.apply {
+                last().add(pos)
+                pathPoints.postValue(this)
+            }
+        }
+    }
+
+    private fun addEmptyLine() = pathPoints.value?.apply {
+        add(mutableListOf())
+        pathPoints.postValue(this)
+    } ?: pathPoints.postValue(mutableListOf(mutableListOf()))
+
     private fun startForegroundService() {
         addEmptyLine()
+        isTracking.postValue(true)
+
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

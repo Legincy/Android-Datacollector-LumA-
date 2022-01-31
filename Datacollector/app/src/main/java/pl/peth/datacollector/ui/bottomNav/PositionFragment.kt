@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -121,7 +122,7 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
         }
 
         binding?.trackMe?.setOnClickListener {
-            sendCommandToService(ACTION_START_OR_RESUME_SERVICE)
+            sendCommandToService(ACTION_START_OR_RESUME_SERVICE, PRIORITY_HIGH_ACCURACY)
         }
     }
 
@@ -246,9 +247,10 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
         )
     }
 
-    private fun sendCommandToService(action: String) {
+    private fun sendCommandToService(action: String, accuracy: Int) {
         Intent(requireContext(), TrackingService::class.java).also {
             it.action = action
+            it.putExtra("accuracy", accuracy)
             requireContext().startService(it)
         }
     }
