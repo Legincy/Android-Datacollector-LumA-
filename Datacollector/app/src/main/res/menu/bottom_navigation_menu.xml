@@ -3,14 +3,16 @@
 
     <item
         android:id="@+id/sensorFragment"
-        android:title="SENSOR"
-        android:icon="@drawable/sensor_icon"/>
+        android:icon="@drawable/sensor_icon"
+        android:title="SENSOR" />
     <item
         android:id="@+id/positionFragment"
-        android:title="POSITION"
-        android:icon="@drawable/position_icon"/>
+        android:icon="@drawable/position_icon"
+        android:title="POSITION" />
+    <!--
     <item
         android:id="@+id/XFragment"
         android:title="X"
         android:icon="@drawable/x_icon"/>
+        -->
 </menu>

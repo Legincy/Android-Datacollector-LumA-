@@ -125,5 +125,14 @@
             app:layout_constraintStart_toEndOf="@id/btnSnap"
             app:layout_constraintTop_toBottomOf="@id/positionModeDropDown" />
 
+        <Button
+            android:id="@+id/track_me"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Track me"
+            app:layout_constraintEnd_toEndOf="@id/btnNewRoute"
+            app:layout_constraintTop_toBottomOf="@id/btnNewRoute" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

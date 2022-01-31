@@ -5,7 +5,6 @@ import android.provider.Settings
 import android.util.Log
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import ru.gildor.coroutines.okhttp.await
@@ -28,20 +27,21 @@ class APIHandler {
     }
 
     fun prepareAPI() {
-        uniqueID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID)
+        uniqueID =
+            Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID)
 
         GlobalScope.launch {
-            val res = postData("device", null);
-            if(res == null) {
-                connection = false
-            }else{
-                connection = true
-            }
-            res?.close();
+            val res = postData("device", null)
+            connection = res != null
+            res?.close()
         }
     }
 
-    private suspend fun initRequest(data: String, targetAddr: String, methodType: String): Response? {
+    private suspend fun initRequest(
+        data: String,
+        targetAddr: String,
+        methodType: String,
+    ): Response? {
         var result: Response? = null
 
         if (connection) {
@@ -62,7 +62,7 @@ class APIHandler {
             try {
                 result = client.newCall(request).await()
             } catch (e: SocketTimeoutException) {
-                Log.e("API", e.toString());
+                Log.e("API", e.toString())
                 connection = false
             }
         } else {
@@ -77,16 +77,16 @@ class APIHandler {
     }
 
     fun getData(dest: String, id: String) {
-        val target: String = "${API_ADDRESS}/${dest}/${id}"
+        val target: String = "$API_ADDRESS/$dest/$id"
         GlobalScope.launch { val response: Response? = initRequest("", target, "GET") }
     }
 
     suspend fun postData(dest: String, data: HashMap<String, String>?): Response? {
-        val target: String = "${API_ADDRESS}/${dest}"
-        var content: String = "deviceid=${uniqueID}&"
-        var response: Response? = null;
+        val target: String = "$API_ADDRESS/$dest"
+        var content: String = "deviceid=$uniqueID&"
+        var response: Response? = null
 
-        if(data != null){
+        if (data != null) {
             data.forEach { key, value ->
                 content = content + "%s=%s&".format(key, value)
             }
@@ -94,6 +94,6 @@ class APIHandler {
 
         response = initRequest(content.dropLast(1), target, "POST")
 
-        return response;
+        return response
     }
 }

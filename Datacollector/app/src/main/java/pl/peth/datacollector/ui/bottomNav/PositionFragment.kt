@@ -1,5 +1,6 @@
 package pl.peth.datacollector.ui.bottomNav
 
+import android.content.Intent
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
@@ -20,7 +21,9 @@ import com.google.android.gms.maps.model.PolylineOptions
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import pl.peth.datacollector.Constants.ACTION_START_OR_RESUME_SERVICE
 import pl.peth.datacollector.R
+import pl.peth.datacollector.TrackingService
 import pl.peth.datacollector.api.APIHandler
 import pl.peth.datacollector.databinding.PositionFragmentBinding
 import pl.peth.datacollector.position.PositionManager
@@ -115,6 +118,10 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
             latitude = positionManager?.latitude ?: 0.0
             Toast.makeText(activity, "$latitude  $longitude", Toast.LENGTH_SHORT).show()
             addRedCircle()
+        }
+
+        binding?.trackMe?.setOnClickListener {
+            sendCommandToService(ACTION_START_OR_RESUME_SERVICE)
         }
     }
 
@@ -237,5 +244,12 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
                 )
             )
         )
+    }
+
+    private fun sendCommandToService(action: String) {
+        Intent(requireContext(), TrackingService::class.java).also {
+            it.action = action
+            requireContext().startService(it)
+        }
     }
 }

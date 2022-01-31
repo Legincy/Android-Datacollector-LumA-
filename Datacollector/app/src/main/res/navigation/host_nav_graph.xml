@@ -4,10 +4,15 @@
     android:id="@+id/host_nav_graph"
     app:startDestination="@id/sensorFragment">
 
+    <action
+        android:id="@+id/action_global_position_fragment"
+        app:destination="@id/positionFragment"
+        app:launchSingleTop="true" />
+
     <fragment
         android:id="@+id/positionFragment"
         android:name="pl.peth.datacollector.ui.bottomNav.PositionFragment"
-        android:label="PositionFragment" >
+        android:label="PositionFragment">
         <action
             android:id="@+id/action_positionFragment_to_XFragment"
             app:destination="@id/XFragment" />
@@ -18,7 +23,7 @@
     <fragment
         android:id="@+id/sensorFragment"
         android:name="pl.peth.datacollector.ui.bottomNav.SensorFragment"
-        android:label="SensorFragment" >
+        android:label="SensorFragment">
         <action
             android:id="@+id/action_sensorFragment_to_XFragment"
             app:destination="@id/XFragment" />
@@ -29,7 +34,7 @@
     <fragment
         android:id="@+id/XFragment"
         android:name="pl.peth.datacollector.ui.bottomNav.XFragment"
-        android:label="XFragment" >
+        android:label="XFragment">
         <action
             android:id="@+id/action_XFragment_to_positionFragment"
             app:destination="@id/positionFragment" />

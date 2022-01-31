@@ -1,0 +1,153 @@
+package pl.peth.datacollector
+
+import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.NotificationManager.IMPORTANCE_LOW
+import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
+import android.content.Context
+import android.content.Intent
+import android.location.Location
+import android.os.Build
+import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.maps.model.LatLng
+import pl.peth.datacollector.Constants.ACTION_PAUSE_SERVICE
+import pl.peth.datacollector.Constants.ACTION_SHOW_POSITION_FRAGMENT
+import pl.peth.datacollector.Constants.ACTION_START_OR_RESUME_SERVICE
+import pl.peth.datacollector.Constants.ACTION_STOP_SERVICE
+import pl.peth.datacollector.Constants.NOTIFICATION_CHANNEL_ID
+import pl.peth.datacollector.Constants.NOTIFICATION_CHANNEL_NAME
+import pl.peth.datacollector.Constants.NOTIFICATION_ID
+import pl.peth.datacollector.ui.MainActivity
+
+typealias line = MutableList<LatLng>
+typealias lines = MutableList<line>
+
+class TrackingService : LifecycleService() {
+
+    var isFirstRun = true
+
+    private fun postInitialValues() {
+        isTracking.postValue(false)
+        pathPoints.postValue(mutableListOf())
+    }
+
+    val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(result: LocationResult) {
+            super.onLocationResult(result)
+            if (isTracking.value!!) {
+                result.locations.let { locations ->
+                    for (location in locations) {
+                        addPathPoint(location)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun addPathPoint(location: Location?) {
+        location?.let {
+            val pos = LatLng(
+                location.latitude,
+                location.longitude
+            )
+            pathPoints.value?.apply {
+                last().add(pos)
+                pathPoints.postValue(this)
+            }
+        }
+    }
+
+    private fun addEmptyLine() = pathPoints.value?.apply {
+        add(mutableListOf())
+        pathPoints.postValue(this)
+    } ?: pathPoints.postValue(mutableListOf(mutableListOf()))
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent?.let {
+            when (it.action) {
+                ACTION_START_OR_RESUME_SERVICE -> {
+
+                    if (isFirstRun) {
+                        startForegroundService()
+                        isFirstRun = false
+
+                        Toast.makeText(
+                            applicationContext,
+                            "Started Tracking", Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            applicationContext,
+                            "Tracking....",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+                ACTION_PAUSE_SERVICE -> {
+                    Toast.makeText(
+                        applicationContext,
+                        "Paused service", Toast.LENGTH_SHORT
+                    ).show()
+                }
+                ACTION_STOP_SERVICE -> {
+                    Toast.makeText(
+                        applicationContext,
+                        "Stopped service", Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun startForegroundService() {
+        addEmptyLine()
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel(notificationManager)
+        }
+
+        val notificationBuilder =
+            NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+                .setAutoCancel(false)
+                .setOngoing(true)
+                .setSmallIcon(R.drawable.position_icon)
+                .setContentTitle("DC Tracker")
+                .setContentText("")
+                .setContentIntent(getMainActivityPendingIntent())
+
+        startForeground(NOTIFICATION_ID, notificationBuilder.build())
+    }
+
+    @SuppressLint("UnspecifiedImmutableFlag")
+    private fun getMainActivityPendingIntent() = PendingIntent.getActivity(
+        this,
+        0,
+        Intent(this, MainActivity::class.java).also {
+            it.action = ACTION_SHOW_POSITION_FRAGMENT
+        },
+        FLAG_UPDATE_CURRENT
+    )
+
+    private fun createNotificationChannel(notificationManager: NotificationManager) {
+        val channel = NotificationChannel(
+            NOTIFICATION_CHANNEL_ID,
+            NOTIFICATION_CHANNEL_NAME, IMPORTANCE_LOW
+        )
+        notificationManager.createNotificationChannel(channel)
+    }
+
+    companion object {
+
+        val isTracking = MutableLiveData<Boolean>()
+        val pathPoints = MutableLiveData<lines>()
+    }
+}
