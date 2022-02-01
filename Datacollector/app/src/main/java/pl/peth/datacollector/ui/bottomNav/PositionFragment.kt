@@ -23,6 +23,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import pl.peth.datacollector.Constants.ACTION_START_OR_RESUME_SERVICE
+import pl.peth.datacollector.Constants.ACTION_STOP_SERVICE
 import pl.peth.datacollector.R
 import pl.peth.datacollector.TrackingService
 import pl.peth.datacollector.api.APIHandler
@@ -43,6 +44,7 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
     private var firstPoint = true
     private lateinit var mMap: GoogleMap
     private lateinit var mapFragment: SupportMapFragment
+    private var isTracking = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -122,7 +124,13 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
         }
 
         binding?.trackMe?.setOnClickListener {
-            sendCommandToService(ACTION_START_OR_RESUME_SERVICE, PRIORITY_HIGH_ACCURACY)
+            if (isTracking) {
+                sendCommandToService(ACTION_STOP_SERVICE, PRIORITY_HIGH_ACCURACY)
+                isTracking = false
+            } else {
+                sendCommandToService(ACTION_START_OR_RESUME_SERVICE, PRIORITY_HIGH_ACCURACY)
+                isTracking = true
+            }
         }
     }
 

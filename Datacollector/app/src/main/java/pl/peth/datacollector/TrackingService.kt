@@ -9,6 +9,8 @@ import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Context
 import android.content.Intent
 import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Build
 import android.os.Looper
 import android.widget.Toast
@@ -40,8 +42,12 @@ class TrackingService : LifecycleService() {
 
     var isFirstRun = true
     private var accuracy = PRIORITY_HIGH_ACCURACY
+    private var minTime = 0L
+    private var minDistance = 0f
 
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private val locationManager: LocationManager =
+        MainActivity.locationManager
 
     override fun onCreate() {
         super.onCreate()
@@ -57,14 +63,13 @@ class TrackingService : LifecycleService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        intent?.let {
-            accuracy = it.getIntExtra("accuracy", PRIORITY_HIGH_ACCURACY)
-            when (it.action) {
+        intent?.let { intent ->
+            accuracy = intent.getIntExtra("accuracy", PRIORITY_HIGH_ACCURACY)
+            when (intent.action) {
                 ACTION_START_OR_RESUME_SERVICE -> {
                     if (isFirstRun) {
                         startForegroundService()
                         isFirstRun = false
-
                         Toast.makeText(
                             applicationContext,
                             "Started Tracking", Toast.LENGTH_SHORT
@@ -84,6 +89,8 @@ class TrackingService : LifecycleService() {
                     ).show()
                 }
                 ACTION_STOP_SERVICE -> {
+                    locationListener.let { locationManager.removeUpdates(it) }
+                    isFirstRun = true
                     Toast.makeText(
                         applicationContext,
                         "Stopped service", Toast.LENGTH_SHORT
@@ -112,6 +119,12 @@ class TrackingService : LifecycleService() {
                 locationCallback,
                 Looper.getMainLooper()
             )
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                minTime,
+                minDistance,
+                locationListener
+            )
         } else {
             fusedLocationProviderClient.removeLocationUpdates(locationCallback)
         }
@@ -132,6 +145,20 @@ class TrackingService : LifecycleService() {
                          ).show()***/
                     }
                 }
+            }
+        }
+    }
+
+    private val locationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            // sendData(location.longitude, location.latitude)
+            if (isTracking.value!!) {
+                addPathPoint(location)
+                Toast.makeText(
+                    applicationContext,
+                    "${location.latitude}, ${location.longitude}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
