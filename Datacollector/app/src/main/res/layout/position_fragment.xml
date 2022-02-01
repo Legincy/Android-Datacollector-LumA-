@@ -22,14 +22,14 @@
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="380dp"
+            android:layout_height="100dp"
             android:layout_margin="10dp"
             app:layout_constraintBottom_toTopOf="@id/positionTechDropDown"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:context=".ui.MapsFragment"
-            tools:ignore="FragmentTagUsage" />
+            tools:ignore="FragmentTagUsage"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/positionTechDropDown"
@@ -125,6 +125,45 @@
             app:layout_constraintStart_toEndOf="@id/btnSnap"
             app:layout_constraintTop_toBottomOf="@id/positionModeDropDown" />
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/strategy"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="260dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:hint="Strategy"
+            android:theme="@style/dropDownMenuStyle"
+            app:boxStrokeColor="@color/themeColor"
+            app:endIconTint="@color/black"
+            app:hintTextAppearance="@color/black"
+            app:hintTextColor="@color/black"
+            app:layout_constraintEnd_toEndOf="@id/positionTechDropDown"
+            app:layout_constraintStart_toStartOf="@id/positionTechDropDown"
+            app:layout_constraintTop_toBottomOf="@+id/btnSnap">
+
+            <AutoCompleteTextView
+                android:id="@+id/strategy_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif"
+                android:inputType="none"
+                android:padding="14dp"
+                android:text="Select"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/slider"
+            android:layout_width="260dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/strategy"
+            app:layout_constraintEnd_toEndOf="@id/strategy"
+            app:layout_constraintTop_toBottomOf="@id/strategy"
+            android:layout_marginTop="20dp"/>
+
         <Button
             android:id="@+id/track_me"
             android:layout_width="wrap_content"
@@ -132,7 +171,7 @@
             android:layout_marginTop="12dp"
             android:text="Track me"
             app:layout_constraintEnd_toEndOf="@id/btnNewRoute"
-            app:layout_constraintTop_toBottomOf="@id/btnNewRoute" />
+            app:layout_constraintTop_toBottomOf="@id/slider" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

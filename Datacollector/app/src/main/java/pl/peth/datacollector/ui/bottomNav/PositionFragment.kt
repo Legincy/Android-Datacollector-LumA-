@@ -45,6 +45,8 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private lateinit var mapFragment: SupportMapFragment
     private var isTracking = false
+    private var strategy = ""
+    private var sliderValue = 0f
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -139,10 +141,17 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
         val positionTechAdapter =
             ArrayAdapter(requireContext(), R.layout.drop_down_item, positionTechArray)
 
+        val strategyArray = resources.getStringArray(R.array.dropDownStrategy)
+        val strategyAdapter = ArrayAdapter(requireContext(), R.layout.drop_down_item, strategyArray)
+
         binding?.positionTechDropDownText?.setAdapter(positionTechAdapter)
+        binding?.strategyText?.setAdapter(strategyAdapter)
 
         binding?.positionTechDropDownText?.setOnItemClickListener { parent, view, position, id ->
             updateModeDropDown(id)
+        }
+        binding?.strategyText?.setOnItemClickListener { parent, view, position, id ->
+            setStrategy(id)
         }
     }
 
@@ -255,10 +264,43 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
         )
     }
 
+    private fun setStrategy(id: Long) {
+        binding?.slider?.stepSize = 1f
+        binding?.slider?.valueFrom = 0f
+
+        when (id) {
+            0L -> {
+                strategy = "Zeit"
+                binding?.slider?.value = 0f
+                binding?.slider?.valueTo = 10f
+            }
+            1L -> {
+                strategy = "Abstand"
+                binding?.slider?.value = 0f
+                binding?.slider?.valueTo = 100f
+            }
+            2L -> {
+                strategy = "Geschwindichkeit"
+                binding?.slider?.value = 0f
+                binding?.slider?.valueTo = 240f
+            }
+        }
+    }
+
+    private fun test() {
+        sliderValue = binding?.slider?.value ?: 0f
+        Toast.makeText(activity, "$strategy $sliderValue $routeId", Toast.LENGTH_SHORT)
+            .show()
+    }
+
     private fun sendCommandToService(action: String, accuracy: Int) {
+        sliderValue = binding?.slider?.value ?: 0f
         Intent(requireContext(), TrackingService::class.java).also {
             it.action = action
             it.putExtra("accuracy", accuracy)
+            it.putExtra("strategy", strategy)
+            it.putExtra("sliderValue", sliderValue)
+            it.putExtra("routeId", routeId)
             requireContext().startService(it)
         }
     }

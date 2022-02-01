@@ -13,6 +13,7 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
@@ -24,6 +25,8 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import pl.peth.datacollector.Constants.ACTION_PAUSE_SERVICE
 import pl.peth.datacollector.Constants.ACTION_SHOW_POSITION_FRAGMENT
 import pl.peth.datacollector.Constants.ACTION_START_OR_RESUME_SERVICE
@@ -34,6 +37,7 @@ import pl.peth.datacollector.Constants.NOTIFICATION_CHANNEL_ID
 import pl.peth.datacollector.Constants.NOTIFICATION_CHANNEL_NAME
 import pl.peth.datacollector.Constants.NOTIFICATION_ID
 import pl.peth.datacollector.ui.MainActivity
+import pl.peth.datacollector.ui.MainActivity.Companion.apiHandler
 
 typealias line = MutableList<LatLng>
 typealias lines = MutableList<line>
@@ -44,6 +48,8 @@ class TrackingService : LifecycleService() {
     private var accuracy = PRIORITY_HIGH_ACCURACY
     private var minTime = 0L
     private var minDistance = 0f
+    private var strategy = ""
+    private var routeId = 0
 
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private val locationManager: LocationManager =
@@ -62,9 +68,27 @@ class TrackingService : LifecycleService() {
         )
     }
 
+    @SuppressLint("LogNotTimber")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let { intent ->
             accuracy = intent.getIntExtra("accuracy", PRIORITY_HIGH_ACCURACY)
+            routeId = intent.getIntExtra("routeId", 1)
+            strategy = intent.getStringExtra("strategy").toString()
+            when (strategy) {
+                "Zeit" -> {
+                    minDistance = 0f
+                    minTime = intent.getFloatExtra("sliderValue", 0F).toLong() * 1000
+                }
+                "Abstand" -> {
+                    minTime = 0L
+                    minDistance = intent.getFloatExtra("sliderValue", 0F)
+                }
+                "Geschwindichkeit" -> TODO()
+            }
+            Log.d(
+                "Location Variable",
+                "$routeId $strategy $minDistance $minTime"
+            )
             when (intent.action) {
                 ACTION_START_OR_RESUME_SERVICE -> {
                     if (isFirstRun) {
@@ -137,12 +161,7 @@ class TrackingService : LifecycleService() {
                 result.locations.let { locations ->
                     for (location in locations) {
                         addPathPoint(location)
-                        /**
-                         Toast.makeText(
-                         applicationContext,
-                         "NEW LOCATION: ${location.latitude}, ${location.longitude}",
-                         Toast.LENGTH_SHORT
-                         ).show()***/
+                        // collect location if needed
                     }
                 }
             }
@@ -150,15 +169,18 @@ class TrackingService : LifecycleService() {
     }
 
     private val locationListener = object : LocationListener {
+        @SuppressLint("LogNotTimber")
         override fun onLocationChanged(location: Location) {
-            // sendData(location.longitude, location.latitude)
+            sendData(location.longitude, location.latitude, routeId, strategy, minTime, minDistance)
             if (isTracking.value!!) {
                 addPathPoint(location)
+                Log.d("Location", "${location.latitude} ${location.longitude}")
+                /*
                 Toast.makeText(
                     applicationContext,
                     "${location.latitude}, ${location.longitude}",
                     Toast.LENGTH_SHORT
-                ).show()
+                ).show()*/
             }
         }
     }
@@ -219,6 +241,31 @@ class TrackingService : LifecycleService() {
             NOTIFICATION_CHANNEL_NAME, IMPORTANCE_LOW
         )
         notificationManager.createNotificationChannel(channel)
+    }
+
+    private fun sendData(
+        longitude: Double,
+        latitude: Double,
+        routeId: Int,
+        strategy: String,
+        minTime: Long,
+        minDistance: Float,
+    ) {
+        val data: HashMap<String, String> = hashMapOf(
+            "longitude" to "$longitude",
+            "latitude" to "$latitude",
+            "type" to "$strategy",
+            "route" to "$routeId",
+            "marked" to "$minTime"
+        )
+
+        if ((routeId != null)) {
+            GlobalScope.launch {
+                val res = apiHandler.postData("position/add", data)
+                println(res?.body?.string())
+                res?.close()
+            }
+        }
     }
 
     companion object {

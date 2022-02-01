@@ -23,6 +23,12 @@
         <item name="position_mode_flp">Fused Location Provider</item>
     </string-array>
 
+    <string-array name="dropDownStrategy">
+        <item name="Zeit-Strategie">Zeit</item>
+        <item name="Abstands-Strategie">Abstands</item>
+        <item name="Geschwindigkeits-Strategie">Geschwindigkeits</item>
+    </string-array>
+
     <string-array name="dropDownPositionModeLM">
         <item>Network Provider</item>
         <item>GPS Provider</item>
