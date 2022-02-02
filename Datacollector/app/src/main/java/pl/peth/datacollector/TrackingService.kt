@@ -59,7 +59,7 @@ class TrackingService : LifecycleService() {
         super.onCreate()
         postInitialValues()
         fusedLocationProviderClient = FusedLocationProviderClient(this)
-        locationManager = MainActivity.locationManager
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         isTracking.observe(
             this,
