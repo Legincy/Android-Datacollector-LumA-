@@ -279,6 +279,7 @@ class TrackingService : LifecycleService() {
                 println(res?.body?.string())
                 res?.close()
             }
+            Log.d("Mrked", "$marked")
             marked = 0
         }
     }
@@ -294,7 +295,7 @@ class TrackingService : LifecycleService() {
             "Zeit" -> {
                 val trackingData = TrackingData()
                 if ((trackingData.time.second - lastSent!!.time.second) >= minTime) {
-                    Log.d("Mrked", "Marked = 1")
+                    marked = 1
                 }
             }
             "Abstand" -> {
