@@ -13,7 +13,6 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
 import android.os.Looper
-import android.text.format.Time
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
@@ -37,10 +36,8 @@ import pl.peth.datacollector.Constants.LOCATION_UPDATE_INTERVAL
 import pl.peth.datacollector.Constants.NOTIFICATION_CHANNEL_ID
 import pl.peth.datacollector.Constants.NOTIFICATION_CHANNEL_NAME
 import pl.peth.datacollector.Constants.NOTIFICATION_ID
-import pl.peth.datacollector.`object`.TrackingData
 import pl.peth.datacollector.ui.MainActivity
 import pl.peth.datacollector.ui.MainActivity.Companion.apiHandler
-import java.time.LocalDateTime
 
 typealias line = MutableList<LatLng>
 typealias lines = MutableList<line>
@@ -52,6 +49,7 @@ class TrackingService : LifecycleService() {
     private var minTime = 0L
     private var minDistance = 0f
     private var strategy = ""
+    private var strategyId = 0
     private var routeId = 0
     private var marked = 0
     private var time = System.currentTimeMillis()
@@ -59,12 +57,11 @@ class TrackingService : LifecycleService() {
     private var secondPoint = 0
 
     private data class TrackingData(
-        var longitude: Double = 0.0,
-        var latitude: Double = 0.0,
-        val time: LocalDateTime = LocalDateTime.now()
+        val location: Location = Location(""),
+        val time: Long = System.currentTimeMillis(),
     )
 
-    private var lastSent: TrackingData? = null;
+    private var lastSent: TrackingData? = null
 
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationManager: LocationManager
@@ -92,10 +89,12 @@ class TrackingService : LifecycleService() {
             strategy = intent.getStringExtra("strategy").toString()
             when (strategy) {
                 "Zeit" -> {
+                    strategyId = 7
                     minDistance = 0f
-                    minTime = intent.getFloatExtra("sliderValue", 0F).toLong()
+                    minTime = intent.getFloatExtra("sliderValue", 0F).toLong() * 1000
                 }
                 "Abstand" -> {
+                    strategyId = 8
                     minTime = 0L
                     minDistance = intent.getFloatExtra("sliderValue", 0F)
                 }
@@ -161,8 +160,8 @@ class TrackingService : LifecycleService() {
             )
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
-                minTime,
-                minDistance,
+                0L,
+                0f,
                 locationListener
             )
         } else {
@@ -191,8 +190,8 @@ class TrackingService : LifecycleService() {
                 addPathPoint(location)
 
                 val trackingData = TrackingData().apply {
-                    this.latitude = location.latitude
-                    this.longitude = location.longitude
+                    this.location.latitude = location.latitude
+                    this.location.longitude = location.longitude
                 }
 
                 updateMarkedLocation(trackingData)
@@ -237,7 +236,6 @@ class TrackingService : LifecycleService() {
             NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setAutoCancel(false)
                 .setOngoing(true)
-                .setSmallIcon(R.drawable.position_icon)
                 .setContentTitle("DC Tracker")
                 .setContentText("")
                 .setContentIntent(getMainActivityPendingIntent())
@@ -268,7 +266,7 @@ class TrackingService : LifecycleService() {
         val data: HashMap<String, String> = hashMapOf(
             "longitude" to "$longitude",
             "latitude" to "$latitude",
-            "type" to "$strategy",
+            "type" to "$strategyId",
             "route" to "$routeId",
             "marked" to "$marked"
         )
@@ -279,30 +277,41 @@ class TrackingService : LifecycleService() {
                 println(res?.body?.string())
                 res?.close()
             }
-            Log.d("Mrked", "$marked")
+            Log.d("Location", "-------------------$marked")
             marked = 0
         }
     }
 
     private fun updateMarkedLocation(data: TrackingData) {
         if (this.lastSent == null) {
-            this.marked = 1;
-            this.lastSent = data;
+            this.marked = 1
+            this.lastSent = data
             return
         }
 
         when (strategy) {
             "Zeit" -> {
-                val trackingData = TrackingData()
-                if ((trackingData.time.second - lastSent!!.time.second) >= minTime) {
+                val def = data.time - lastSent!!.time
+                Log.d("Time", "$def")
+                if (def >= minTime) {
                     marked = 1
+                    lastSent = data
                 }
             }
             "Abstand" -> {
-
+                val distance = getDistance(data, lastSent!!)
+                if(distance >= minDistance){
+                    marked = 1
+                    lastSent = data
+                }
+                Log.d("Distance", "---------$distance")
             }
             "Geschwindichkeit" -> TODO()
         }
+    }
+
+    private fun getDistance(newDate: TrackingData, oldData: TrackingData): Float {
+        return oldData.location.distanceTo(newDate.location)
     }
 
     companion object {
