@@ -112,7 +112,6 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
 
         btnNewRoute?.setOnClickListener {
             createNewRoute()
-            binding?.routId?.text = routeId.toString()
             Toast.makeText(activity, "$routeId", Toast.LENGTH_SHORT).show()
             setUpCallBack()
         }
@@ -283,6 +282,11 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
             }
             2L -> {
                 strategy = "Geschwindichkeit"
+                binding?.slider?.value = 0f
+                binding?.slider?.valueTo = 240f
+            }
+            3L -> {
+                strategy = "Bewegung"
                 binding?.slider?.value = 0f
                 binding?.slider?.valueTo = 240f
             }
