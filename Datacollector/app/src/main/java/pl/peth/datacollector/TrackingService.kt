@@ -37,8 +37,10 @@ import pl.peth.datacollector.Constants.LOCATION_UPDATE_INTERVAL
 import pl.peth.datacollector.Constants.NOTIFICATION_CHANNEL_ID
 import pl.peth.datacollector.Constants.NOTIFICATION_CHANNEL_NAME
 import pl.peth.datacollector.Constants.NOTIFICATION_ID
+import pl.peth.datacollector.`object`.TrackingData
 import pl.peth.datacollector.ui.MainActivity
 import pl.peth.datacollector.ui.MainActivity.Companion.apiHandler
+import java.time.LocalDateTime
 
 typealias line = MutableList<LatLng>
 typealias lines = MutableList<line>
@@ -51,10 +53,18 @@ class TrackingService : LifecycleService() {
     private var minDistance = 0f
     private var strategy = ""
     private var routeId = 0
-    private var marked = false
+    private var marked = 0
     private var time = System.currentTimeMillis()
     private var firstPoint = 0
     private var secondPoint = 0
+
+    private data class TrackingData(
+        var longitude: Double = 0.0,
+        var latitude: Double = 0.0,
+        val time: LocalDateTime = LocalDateTime.now()
+    )
+
+    private var lastSent: TrackingData? = null;
 
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationManager: LocationManager
@@ -83,7 +93,7 @@ class TrackingService : LifecycleService() {
             when (strategy) {
                 "Zeit" -> {
                     minDistance = 0f
-                    minTime = intent.getFloatExtra("sliderValue", 0F).toLong() * 1000
+                    minTime = intent.getFloatExtra("sliderValue", 0F).toLong()
                 }
                 "Abstand" -> {
                     minTime = 0L
@@ -179,7 +189,13 @@ class TrackingService : LifecycleService() {
         override fun onLocationChanged(location: Location) {
             if (isTracking.value!!) {
                 addPathPoint(location)
-                updateMarkedLocation()
+
+                val trackingData = TrackingData().apply {
+                    this.latitude = location.latitude
+                    this.longitude = location.longitude
+                }
+
+                updateMarkedLocation(trackingData)
                 sendData(
                     location.longitude,
                     location.latitude,
@@ -258,17 +274,34 @@ class TrackingService : LifecycleService() {
         )
 
         if ((routeId != null)) {
-            marked = false
             GlobalScope.launch {
                 val res = apiHandler.postData("position/add", data)
                 println(res?.body?.string())
                 res?.close()
             }
+            marked = 0
         }
     }
 
-    private fun updateMarkedLocation() {
+    private fun updateMarkedLocation(data: TrackingData) {
+        if (this.lastSent == null) {
+            this.marked = 1;
+            this.lastSent = data;
+            return
+        }
 
+        when (strategy) {
+            "Zeit" -> {
+                val trackingData = TrackingData()
+                if ((trackingData.time.second - lastSent!!.time.second) >= minTime) {
+                    Log.d("Mrked", "Marked = 1")
+                }
+            }
+            "Abstand" -> {
+
+            }
+            "Geschwindichkeit" -> TODO()
+        }
     }
 
     companion object {
