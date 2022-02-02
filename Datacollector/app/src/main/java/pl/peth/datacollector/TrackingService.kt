@@ -52,13 +52,14 @@ class TrackingService : LifecycleService() {
     private var routeId = 0
 
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private val locationManager: LocationManager =
-        MainActivity.locationManager
+    private lateinit var locationManager: LocationManager
 
+    @SuppressLint("VisibleForTests")
     override fun onCreate() {
         super.onCreate()
         postInitialValues()
         fusedLocationProviderClient = FusedLocationProviderClient(this)
+        locationManager = MainActivity.locationManager
 
         isTracking.observe(
             this,
@@ -171,16 +172,17 @@ class TrackingService : LifecycleService() {
     private val locationListener = object : LocationListener {
         @SuppressLint("LogNotTimber")
         override fun onLocationChanged(location: Location) {
-            sendData(location.longitude, location.latitude, routeId, strategy, minTime, minDistance)
             if (isTracking.value!!) {
                 addPathPoint(location)
+                sendData(
+                    location.longitude,
+                    location.latitude,
+                    routeId,
+                    strategy,
+                    minTime,
+                    minDistance
+                )
                 Log.d("Location", "${location.latitude} ${location.longitude}")
-                /*
-                Toast.makeText(
-                    applicationContext,
-                    "${location.latitude}, ${location.longitude}",
-                    Toast.LENGTH_SHORT
-                ).show()*/
             }
         }
     }

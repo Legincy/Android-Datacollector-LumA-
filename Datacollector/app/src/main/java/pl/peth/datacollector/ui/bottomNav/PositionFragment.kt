@@ -129,9 +129,11 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
             if (isTracking) {
                 sendCommandToService(ACTION_STOP_SERVICE, PRIORITY_HIGH_ACCURACY)
                 isTracking = false
+                binding?.trackMe?.text = "Track Me"
             } else {
                 sendCommandToService(ACTION_START_OR_RESUME_SERVICE, PRIORITY_HIGH_ACCURACY)
                 isTracking = true
+                binding?.trackMe?.text = "Stop Tracking"
             }
         }
     }
