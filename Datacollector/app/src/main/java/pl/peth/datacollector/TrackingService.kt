@@ -13,6 +13,7 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
 import android.os.Looper
+import android.text.format.Time
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
@@ -50,6 +51,10 @@ class TrackingService : LifecycleService() {
     private var minDistance = 0f
     private var strategy = ""
     private var routeId = 0
+    private var marked = false
+    private var time = System.currentTimeMillis()
+    private var firstPoint = 0
+    private var secondPoint = 0
 
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationManager: LocationManager
@@ -174,13 +179,10 @@ class TrackingService : LifecycleService() {
         override fun onLocationChanged(location: Location) {
             if (isTracking.value!!) {
                 addPathPoint(location)
+                updateMarkedLocation()
                 sendData(
                     location.longitude,
                     location.latitude,
-                    routeId,
-                    strategy,
-                    minTime,
-                    minDistance
                 )
                 Log.d("Location", "${location.latitude} ${location.longitude}")
             }
@@ -245,29 +247,28 @@ class TrackingService : LifecycleService() {
         notificationManager.createNotificationChannel(channel)
     }
 
-    private fun sendData(
-        longitude: Double,
-        latitude: Double,
-        routeId: Int,
-        strategy: String,
-        minTime: Long,
-        minDistance: Float,
-    ) {
+    private fun sendData(longitude: Double, latitude: Double) {
+        Log.e("longitude", "$longitude")
         val data: HashMap<String, String> = hashMapOf(
             "longitude" to "$longitude",
             "latitude" to "$latitude",
             "type" to "$strategy",
             "route" to "$routeId",
-            "marked" to "$minTime"
+            "marked" to "$marked"
         )
 
         if ((routeId != null)) {
+            marked = false
             GlobalScope.launch {
                 val res = apiHandler.postData("position/add", data)
                 println(res?.body?.string())
                 res?.close()
             }
         }
+    }
+
+    private fun updateMarkedLocation() {
+
     }
 
     companion object {
