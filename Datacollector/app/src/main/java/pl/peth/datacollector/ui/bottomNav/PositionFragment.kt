@@ -47,6 +47,7 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
     private var isTracking = false
     private var strategy = ""
     private var sliderValue = 0f
+    private var sliderValue2 = 0f
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -268,27 +269,34 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
     private fun setStrategy(id: Long) {
         binding?.slider?.stepSize = 1f
         binding?.slider?.valueFrom = 0f
+        binding?.slider2?.stepSize = 1f
+        binding?.slider2?.valueFrom = 0f
+        binding?.slider2?.valueTo = 100f
 
         when (id) {
             0L -> {
                 strategy = "Zeit"
                 binding?.slider?.value = 0f
                 binding?.slider?.valueTo = 10f
+                binding?.slider2?.visibility = View.GONE
             }
             1L -> {
                 strategy = "Abstand"
                 binding?.slider?.value = 0f
                 binding?.slider?.valueTo = 100f
+                binding?.slider2?.visibility = View.GONE
             }
             2L -> {
                 strategy = "Geschwindichkeit"
                 binding?.slider?.value = 0f
                 binding?.slider?.valueTo = 240f
+                binding?.slider2?.visibility = View.VISIBLE
             }
             3L -> {
                 strategy = "Bewegung"
                 binding?.slider?.value = 0f
                 binding?.slider?.valueTo = 240f
+                binding?.slider2?.visibility = View.GONE
             }
         }
     }
@@ -306,6 +314,7 @@ class PositionFragment : Fragment(), OnMapReadyCallback {
             it.putExtra("accuracy", accuracy)
             it.putExtra("strategy", strategy)
             it.putExtra("sliderValue", sliderValue)
+            it.putExtra("sliderValue2", sliderValue2)
             it.putExtra("routeId", routeId)
             requireContext().startService(it)
         }

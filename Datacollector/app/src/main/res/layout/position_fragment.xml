@@ -29,7 +29,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:context=".ui.MapsFragment"
-            tools:ignore="FragmentTagUsage"/>
+            tools:ignore="FragmentTagUsage" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/positionTechDropDown"
@@ -159,19 +159,30 @@
             android:id="@+id/slider"
             android:layout_width="260dp"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="@id/strategy"
+            android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="@id/strategy"
-            app:layout_constraintTop_toBottomOf="@id/strategy"
-            android:layout_marginTop="20dp"/>
+            app:layout_constraintStart_toStartOf="@id/strategy"
+            app:layout_constraintTop_toBottomOf="@id/strategy" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/slider2"
+            android:layout_width="260dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/slider"
+            app:layout_constraintStart_toStartOf="@id/strategy"
+            app:layout_constraintTop_toBottomOf="@id/slider" />
 
         <Button
-                android:id="@+id/track_me"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="52dp"
-                android:text="Track me"
-                app:layout_constraintEnd_toEndOf="@id/btnNewRoute"
-                app:layout_constraintTop_toBottomOf="@id/slider" android:layout_marginEnd="8dp"/>
+            android:id="@+id/track_me"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="52dp"
+            android:layout_marginEnd="8dp"
+            android:text="Track me"
+            app:layout_constraintEnd_toEndOf="@id/btnNewRoute"
+            app:layout_constraintTop_toBottomOf="@id/slider2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

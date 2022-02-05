@@ -13,14 +13,13 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.location.Location
-import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
 import android.os.CancellationSignal
 import android.os.Looper
-import android.system.Os.accept
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
@@ -62,11 +61,9 @@ class TrackingService : LifecycleService() {
     private var strategyId = 0
     private var routeId = 0
     private var marked = 0
-    private var time = System.currentTimeMillis()
-    private var firstPoint = 0
-    private var secondPoint = 0
-    private val sensorManager = MainActivity.sensorManager;
-    private var lastMovement: Long = 0;
+    private var abstand = 0f
+    private val sensorManager = MainActivity.sensorManager
+    private var lastMovement: Long = 0
     private var isRunning: Boolean = false
     private var cancelService: CancellationSignal = CancellationSignal()
 
@@ -95,7 +92,7 @@ class TrackingService : LifecycleService() {
         )
     }
 
-    val aSensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) //m/s²
+    val aSensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) // m/s²
 
     val eHandler = object : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent?) {
@@ -106,7 +103,7 @@ class TrackingService : LifecycleService() {
             val mAccelCurrent: Float = sqrt(x * x + y * y + z * z)
             Log.d("M-ACCEL_CURRENT", mAccelCurrent.toString())
             if (mAccelCurrent > 6) {
-                Log.d("BEWEGUNG!", "${x} ${y} ${z}")
+                Log.d("BEWEGUNG!", "$x $y $z")
                 lastMovement = System.currentTimeMillis()
                 Log.d("onSensorChanged", mAccelCurrent.toString())
             }
@@ -114,7 +111,6 @@ class TrackingService : LifecycleService() {
 
         override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
         }
-
     }
 
     @SuppressLint("LogNotTimber")
@@ -123,6 +119,7 @@ class TrackingService : LifecycleService() {
             accuracy = intent.getIntExtra("accuracy", PRIORITY_HIGH_ACCURACY)
             routeId = intent.getIntExtra("routeId", 1)
             strategy = intent.getStringExtra("strategy").toString()
+            abstand = intent.getFloatExtra("strategy2", 0f)
             sensorManager.unregisterListener(eHandler)
 
             Log.d("STRATEGY", strategy)
@@ -141,15 +138,19 @@ class TrackingService : LifecycleService() {
                 "Geschwindichkeit" -> {
                     strategyId = 9
                     minDistance = intent.getFloatExtra("sliderValue", 0F)
-                    val maxSpeed = 2.0 //in kmh
-                    minTime = (((maxSpeed / 3.6) * 50)*1000).toLong()
-                    Log.d("DELAY", minTime.toString());
+                    val maxSpeed = 2.0 // in kmh
+                    minTime = (((maxSpeed / 3.6) * 50) * 1000).toLong()
+                    Log.d("DELAY", minTime.toString())
                 }
                 "Bewegung" -> {
                     strategyId = 10
                     minTime = 1000L
                     minDistance = intent.getFloatExtra("sliderValue", 0F)
-                    sensorManager.registerListener(eHandler, aSensor, SensorManager.SENSOR_DELAY_FASTEST);
+                    sensorManager.registerListener(
+                        eHandler,
+                        aSensor,
+                        SensorManager.SENSOR_DELAY_FASTEST
+                    )
                     Log.d("xd", "OKKAAAAY LETS GO")
                 }
             }
@@ -163,7 +164,7 @@ class TrackingService : LifecycleService() {
                     isRunning = true
                     if (isFirstRun) {
                         startForegroundService()
-                        startRoutine(minTime);
+                        startRoutine(minTime)
                         isFirstRun = false
                         Toast.makeText(
                             applicationContext,
@@ -185,7 +186,7 @@ class TrackingService : LifecycleService() {
                 }
                 ACTION_STOP_SERVICE -> {
                     isRunning = false
-                    //locationListener.let { locationManager.removeUpdates(it) }
+                    // locationListener.let { locationManager.removeUpdates(it) }
                     isFirstRun = true
                     Toast.makeText(
                         applicationContext,
@@ -265,14 +266,22 @@ class TrackingService : LifecycleService() {
     }
     */
 
-    private fun getLocation(callback: Consumer<Location>){
-        locationManager.getCurrentLocation(LocationManager.GPS_PROVIDER, cancelService, mainExecutor, callback)
+    @RequiresApi(Build.VERSION_CODES.R)
+    @SuppressLint("MissingPermission")
+    private fun getLocation(callback: Consumer<Location>) {
+        locationManager.getCurrentLocation(
+            LocationManager.GPS_PROVIDER,
+            cancelService,
+            mainExecutor,
+            callback
+        )
     }
 
-    private fun startRoutine(delay: Long){
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun startRoutine(delay: Long) {
         GlobalScope.launch(Dispatchers.IO) {
-            while(isRunning){
-                when(strategy){
+            while (isRunning) {
+                when (strategy) {
                     "Zeit" -> {
                         getLocation { loc ->
                             val trackingData = TrackingData().apply {
@@ -281,7 +290,7 @@ class TrackingService : LifecycleService() {
                             }
                             marked = 1
 
-                            sendData(trackingData);
+                            sendData(trackingData)
                         }
                     }
                     "Abstand", "Geschwindichkeit" -> {
@@ -291,26 +300,29 @@ class TrackingService : LifecycleService() {
                                 this.location.longitude = loc.longitude
                             }
 
-                            if(lastSent != null) Log.d("Ausgerechnete Distanz", lastSent!!.location.distanceTo(loc).toString())
-                            if(lastSent == null || lastSent!!.location.distanceTo(loc) > minDistance) {
+                            if (lastSent != null) Log.d(
+                                "Ausgerechnete Distanz",
+                                lastSent!!.location.distanceTo(loc).toString()
+                            )
+                            if (lastSent == null || lastSent!!.location.distanceTo(loc) > minDistance) {
                                 marked = 1
                             } else {
                                 marked = 0
                             }
-                            sendData(trackingData);
+                            sendData(trackingData)
                         }
                     }
                     "Bewegung" -> {
-                        if(lastMovement == 0L) continue;
+                        if (lastMovement == 0L) continue
 
-                        if(System.currentTimeMillis() - lastMovement <= 10000){
+                        if (System.currentTimeMillis() - lastMovement <= 10000) {
                             getLocation { loc ->
                                 val trackingData = TrackingData().apply {
                                     this.location.latitude = loc.latitude
                                     this.location.longitude = loc.longitude
                                 }
 
-                                if(lastSent == null || lastSent!!.location.distanceTo(loc) > minDistance) {
+                                if (lastSent == null || lastSent!!.location.distanceTo(loc) > minDistance) {
                                     marked = 1
                                 } else {
                                     marked = 0
@@ -321,7 +333,7 @@ class TrackingService : LifecycleService() {
                         }
                     }
                 }
-                delay(delay); //Delay aus UI
+                delay(delay); // Delay aus UI
             }
         }
     }
@@ -394,7 +406,7 @@ class TrackingService : LifecycleService() {
         )
 
         if ((routeId != null)) {
-            if(marked == 1) lastSent = trackingData
+            if (marked == 1) lastSent = trackingData
             GlobalScope.launch {
                 val res = apiHandler.postData("position/add", data)
                 println(res?.body?.string())
@@ -423,33 +435,33 @@ class TrackingService : LifecycleService() {
             }
             "Abstand" -> {
                 val distance = getDistance(data, lastSent!!)
-                if(distance >= minDistance){
+                if (distance >= minDistance) {
                     marked = 1
                     lastSent = data
                 }
                 Log.d("Distance", "---------$distance")
             }
             "Geschwindichkeit" -> {
-                val maxSpeed = 2.0 //in kmh
-                val reqDistance = 50 //in m
+                val maxSpeed = 2.0 // in kmh
+                val reqDistance = 50 // in m
                 val calcTimePeriod = (maxSpeed / 3.6) * reqDistance
                 val timeDiff = data.time - lastSent!!.time
                 if (timeDiff >= calcTimePeriod) {
                     val distance = getDistance(data, lastSent!!)
-                    if(distance >= reqDistance){
+                    if (distance >= reqDistance) {
                         marked = 1
                         lastSent = data
                     }
-                    return;
+                    return
                 }
             }
             "Bewegung" -> {
-                if(lastMovement == 0L) return;
-                if(data.time - lastMovement <= 10000){
-                    marked = 1;
-                    lastSent = data;
+                if (lastMovement == 0L) return
+                if (data.time - lastMovement <= 10000) {
+                    marked = 1
+                    lastSent = data
                 }
-                return;
+                return
             }
         }
     }
