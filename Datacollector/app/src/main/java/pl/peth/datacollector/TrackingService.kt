@@ -62,6 +62,7 @@ class TrackingService : LifecycleService() {
     private var routeId = 0
     private var marked = 0
     private var abstand = 0f
+    private var speed = 0f
     private val sensorManager = MainActivity.sensorManager
     private var lastMovement: Long = 0
     private var isRunning: Boolean = false
@@ -137,7 +138,7 @@ class TrackingService : LifecycleService() {
                 }
                 "Geschwindichkeit" -> {
                     strategyId = 9
-                    minDistance = intent.getFloatExtra("sliderValue", 0F)
+                    speed = intent.getFloatExtra("sliderValue", 0F)
                     val maxSpeed = 2.0 // in kmh
                     minTime = (((maxSpeed / 3.6) * 50) * 1000).toLong()
                     Log.d("DELAY", minTime.toString())
@@ -442,8 +443,8 @@ class TrackingService : LifecycleService() {
                 Log.d("Distance", "---------$distance")
             }
             "Geschwindichkeit" -> {
-                val maxSpeed = 2.0 // in kmh
-                val reqDistance = 50 // in m
+                val maxSpeed = speed // in kmh
+                val reqDistance = abstand // in m
                 val calcTimePeriod = (maxSpeed / 3.6) * reqDistance
                 val timeDiff = data.time - lastSent!!.time
                 if (timeDiff >= calcTimePeriod) {
